@@ -1,0 +1,19 @@
+/** @format */
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+#game {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: black;
+}
