@@ -27,37 +27,6 @@ $svg_private.setBasicAttributes = function (elementType, attributes = {}) {
 /**
  * @public
  * @description
- * Assigns default values for the game objects
- * @param {String} gameElement name of the game element
- * @param {Object} options options defining the element
- * @param {Object} gameNode the svg game node
- * @returns {Object} options
- * */
-
-$svg_private.assignDefaultValues = function (gameElement, options, gameNode) {
-    switch (gameElement) {
-        case 'ship':
-            options.x = options.x || gameNode.clientWidth / 2;
-            options.y = options.y || gameNode.clientHeight / 2;
-            options.radius = options.radius || 50;
-            options.id = options.id || 'ship';
-            options.class = options.class || 'ship';
-            options.lineWidth = options.lineWidth || 0.5;
-            options.stroke = options.stroke || 'white';
-            options.fill = options.fill || 'black';
-            options.angle = (options.angle || 0.5 * Math.PI) / 2;
-            options.curve1 = options.curve1 || 0.25;
-            options.curve2 = options.curve2 || 0.75;
-            options.guide = options.guide || false;
-
-            break;
-    }
-
-    return options;
-};
-/**
- * @public
- * @description
  * Builds the coordinates object for the ship
  * @param {Object} options options defining the element
  * @returns {Object}
@@ -162,7 +131,7 @@ $svg_private.drawShipPaths = function (gameNode, options) {
  * @returns void
  */
 $svg.drawShip = function (gameNode, options = {}) {
-    options = $svg_private.assignDefaultValues('ship', options, gameNode);
+    options = $helpers.assignDefaultValues('shipSVG', options, gameNode);
     $svg_private.drawShipPaths(gameNode, options);
 };
 export default $svg;

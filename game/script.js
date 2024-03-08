@@ -1,5 +1,9 @@
 /** @format */
 
 import $svg from '../modules/svg.js';
+import {Ship} from '../modules/classes.js';
+
 const gameNode = document.querySelector('#game');
-$svg.drawShip(gameNode);
+const ship = new Ship({power: 1000});
+
+ship.draw(gameNode);
