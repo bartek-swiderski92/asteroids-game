@@ -9,11 +9,24 @@ $helpers.handleKeyUp = function (event, value, ship) {
         case '38':
             ship.thrusterOn = value;
             break;
+        case 'ArrowLeft':
+        case '37':
+            ship.leftThrusterOn = value;
+            break;
+        case 'ArrowRight':
+        case '39':
+            ship.rightThrusterOn = value;
+            break;
+        case 'g':
+        case '71':
+            if (value) game.guide = !game.guide;
+            ship.rightThrusterOn = value;
+            break;
         default:
             nothingHandled = true;
     }
     if (nothingHandled) {
-        event.preventDefault();
+        //    event.preventDefault();
     }
 };
 /**
@@ -55,7 +68,6 @@ $helpers.assignDefaultValues = function (gameElement, options, gameNode, globalO
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.thrusterOn = options.thrusterOn ?? false;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';

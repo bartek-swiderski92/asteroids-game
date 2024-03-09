@@ -2,6 +2,12 @@
 import $svg from '../modules/svg.js';
 import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
+
+export class Game {
+    constructor(options) {
+        this.guide = options.guide;
+    }
+}
 export class Mass {
     constructor(options) {
         options = $helpers.assignDefaultValues('massClass', options);
@@ -63,15 +69,20 @@ export class Ship extends Mass {
         options = $helpers.assignDefaultValues('shipClass', options, gameNode);
         super(options);
         this.options = options;
-        this.id = options.id;
         this.thrusterPower = options.thrusterPower;
-        this.thrusterOn = options.thrusterOn;
+        this.steeringPower = options.thrusterPower / 20;
+        this.thrusterOn = false;
+        this.rightThrusterOn = false;
+        this.leftThrusterOn = false;
     }
+
     draw(asteroids) {
         $svg.drawShip(asteroids, this.options);
     }
+
     update(elapsed) {
         this.push(this.angle, this.thruster_on * this.thruster_power, elapsed);
+        this.twist((this.rightThrusterOn - this.leftThrusterOn) * this, this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
     }
 }
