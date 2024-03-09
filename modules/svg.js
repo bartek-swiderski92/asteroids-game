@@ -83,9 +83,33 @@ $svg_private.buildShipCoordinatesObject = function (options) {
  * @public
  * @description
  * Builds the d attribute for the ship
+ * @param {Object} options options defining the ship's flame element
+ * @returns {String} dAttribute
+ */
+$svg_private.buildDAttributeForFlame = function (options) {
+    return `M ${options.x} ${options.y} Q ${options.controlPointX} ${options.controlPointY} ${options.posX} ${options.posY}`;
+};
+/**
+ * @public
+ * @description
+ * Draws ship's flame and appends it in game
+ * @param {Object} parentNode the svg game node
+ * @param {Object} options options defining the element
+ * @returns void
+ */
+$svg.drawFlame = function (parentNode, options) {
+    options.d = $svg_private.buildDAttributeForFlame(options);
+    let shipFlameNode = $svg_private.setBasicAttributes('path', options);
+
+    parentNode.appendChild(shipFlameNode);
+};
+/**
+ * @public
+ * @description
+ * Builds the d attribute for the ship
  * @param {Object} options options defining the element
  * @param {Object} coordinates coordinates of the ship
- * @returns {Object} dAttribute
+ * @returns {String} dAttribute
  */
 $svg_private.buildDAttributeForShip = function (options, coordinates) {
     let {x, y, guide, radius} = options;
@@ -109,17 +133,17 @@ $svg_private.buildDAttributeForShip = function (options, coordinates) {
  * @public
  * @description
  * Gets coordinates and the d attribute, sets all attributes and appends the ship in the game node
- * @param {Object} gameNode the svg game node
+ * @param {Object} parentNode the svg game node
  * @param {Object} options options defining the element
  * @returns void
  */
-$svg_private.drawShipPaths = function (gameNode, options) {
+$svg_private.drawShipPaths = function (parentNode, options) {
     const coordinates = $svg_private.buildShipCoordinatesObject(options);
     options.d = $svg_private.buildDAttributeForShip(options, coordinates);
 
     const outputElement = $svg_private.setBasicAttributes('path', options);
 
-    gameNode.appendChild(outputElement);
+    parentNode.appendChild(outputElement);
 };
 
 /**
@@ -131,7 +155,17 @@ $svg_private.drawShipPaths = function (gameNode, options) {
  * @returns void
  */
 $svg.drawShip = function (gameNode, options = {}) {
-    options = $helpers.assignDefaultValues('shipSVG', options, gameNode);
-    $svg_private.drawShipPaths(gameNode, options);
+    // options = $helpers.assignDefaultValues('shipSVG', options, gameNode);
+    let groupTagOptions = options.groupTagOptions ?? {};
+    let flameOptions = options.flameOptions ?? {};
+    groupTagOptions = $helpers.assignDefaultValues('groupTagSVG', groupTagOptions, gameNode);
+    flameOptions = $helpers.assignDefaultValues('shipFlame', flameOptions, gameNode, options);
+
+    const shipGroupTag = $svg_private.setBasicAttributes('g', groupTagOptions);
+
+    $svg.drawFlame(shipGroupTag, flameOptions);
+    $svg_private.drawShipPaths(shipGroupTag, options);
+    gameNode.appendChild(shipGroupTag);
 };
+
 export default $svg;
