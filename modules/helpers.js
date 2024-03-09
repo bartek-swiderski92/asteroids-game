@@ -1,7 +1,13 @@
 /** @format */
 
 const $helpers = {};
-
+/**
+ * @public
+ * @description
+ * Converts kebab case to camel case
+ * @param {String} string
+ * @returns {String}
+ * */
 $helpers.kebabToCamelCase = function (string) {
     return string.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($, ofs) => (ofs ? '-' : '') + $.toLowerCase());
 };
