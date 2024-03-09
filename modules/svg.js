@@ -2,9 +2,48 @@
 import $helpers from '../modules/helpers.js';
 
 const $svg = {};
-const $svg_private = {};
+const $svgPrivate = {};
 
-$svg_private.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth'];
+$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy'];
+
+$svgPrivate.drawCircle = function (options = {}) {
+    let circle = $svgPrivate.setBasicAttributes('circle', options);
+    return circle;
+};
+
+$svg.drawGrid = function (gameNode, options = {}) {
+    options = $helpers.assignDefaultValues('grid', options);
+    const {minor, major, lineColor, textColor} = options;
+    const boardWidth = gameNode.clientWidth;
+    const boardHeight = gameNode.clientHeight;
+    const gridGTag = $svgPrivate.setBasicAttributes('g', options);
+
+    for (let x = 0; x < boardWidth; x += minor) {
+        let lineEl;
+        if (x % major === 0) {
+            let coordinates = /*html*/ `<text x="${x}" y="10" fill="${textColor}" font-size="10">${x}</text>`;
+            gridGTag.innerHTML += coordinates;
+            lineEl = /*html*/ `<line x1="${x}" y1="0" x2="${x}" y2="${boardHeight}" stroke=${lineColor} stroke-width="1"/>`;
+        } else {
+            lineEl = /*html*/ `<line x1="${x}" y1="0" x2="${x}" y2="${boardHeight}" stroke=${lineColor} stroke-width=".5"/>`;
+        }
+        gridGTag.innerHTML += lineEl;
+    }
+
+    for (let y = 0; y < boardHeight; y += minor) {
+        let lineEl;
+        if (y % major === 0) {
+            let coordinates = /*html*/ `<text x="0" y="${y + 10}" fill="${textColor}" font-size="10">${y}</text>`;
+            lineEl = /*html*/ `<line x1="0" y1="${y}" x2="${boardWidth}" y2="${y}" stroke=${lineColor} stroke-width="1"/>`;
+            gridGTag.innerHTML += coordinates;
+        } else {
+            lineEl = /*html*/ `<line x1="0" y1="${y}" x2="${boardWidth}" y2="${y}" stroke=${lineColor} stroke-width=".5"/>`;
+        }
+
+        gridGTag.innerHTML += lineEl;
+    }
+    gameNode.appendChild(gridGTag);
+};
 
 /**
  * @public
@@ -14,9 +53,9 @@ $svg_private.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeW
  * @param {Object} attributes options defining the element
  * @returns {Object} svg element
  * */
-$svg_private.setBasicAttributes = function (elementType, attributes = {}) {
+$svgPrivate.setBasicAttributes = function (elementType, attributes = {}) {
     let element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
-    let filteredAttributes = $svg_private.filterAttributes(attributes);
+    let filteredAttributes = $svgPrivate.filterAttributes(attributes);
     Object.keys(filteredAttributes).forEach((key) => {
         element.setAttribute($helpers.kebabToCamelCase(key), filteredAttributes[key]);
     });
@@ -31,10 +70,10 @@ $svg_private.setBasicAttributes = function (elementType, attributes = {}) {
  * @param {Object} options options defining the element
  * @returns {Object}
  * */
-$svg_private.filterAttributes = function (options) {
+$svgPrivate.filterAttributes = function (options) {
     let filteredObject = {};
     Object.keys(options).forEach((key) => {
-        if ($svg_private.allowedAttributes.indexOf(key) !== -1) {
+        if ($svgPrivate.allowedAttributes.indexOf(key) !== -1) {
             filteredObject[key] = options[key];
         }
     });
@@ -47,7 +86,7 @@ $svg_private.filterAttributes = function (options) {
  * @param {Object} options options defining the element
  * @returns {Object}
  * */
-$svg_private.buildShipCoordinatesObject = function (options) {
+$svgPrivate.buildShipCoordinatesObject = function (options) {
     let {x, y, radius, angle, curve1, curve2} = options;
     return {
         startingPoint: {posX: x + radius, posY: y},
@@ -86,7 +125,7 @@ $svg_private.buildShipCoordinatesObject = function (options) {
  * @param {Object} options options defining the ship's flame element
  * @returns {String} dAttribute
  */
-$svg_private.buildDAttributeForFlame = function (options) {
+$svgPrivate.buildDAttributeForFlame = function (options) {
     return `M ${options.x} ${options.y} Q ${options.controlPointX} ${options.controlPointY} ${options.posX} ${options.posY}`;
 };
 /**
@@ -98,8 +137,8 @@ $svg_private.buildDAttributeForFlame = function (options) {
  * @returns void
  */
 $svg.drawFlame = function (parentNode, options) {
-    options.d = $svg_private.buildDAttributeForFlame(options);
-    let shipFlameNode = $svg_private.setBasicAttributes('path', options);
+    options.d = $svgPrivate.buildDAttributeForFlame(options);
+    let shipFlameNode = $svgPrivate.setBasicAttributes('path', options);
 
     parentNode.appendChild(shipFlameNode);
 };
@@ -111,7 +150,7 @@ $svg.drawFlame = function (parentNode, options) {
  * @param {Object} coordinates coordinates of the ship
  * @returns {String} dAttribute
  */
-$svg_private.buildDAttributeForShip = function (options, coordinates) {
+$svgPrivate.buildDAttributeForShip = function (options, coordinates) {
     let {x, y, guide, radius} = options;
     let dAttribute = `M ${coordinates.startingPoint.posX} ${coordinates.startingPoint.posY}`;
     coordinates.waypoints.forEach((waypoint) => {
@@ -123,7 +162,7 @@ $svg_private.buildDAttributeForShip = function (options, coordinates) {
         coordinates.waypoints.forEach((waypoint) => {
             let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
             if (waypoint.guidelineX) {
-                dAttribute += `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
+                // dAttribute += `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
             }
         });
     }
@@ -137,13 +176,20 @@ $svg_private.buildDAttributeForShip = function (options, coordinates) {
  * @param {Object} options options defining the element
  * @returns void
  */
-$svg_private.drawShipPaths = function (parentNode, options) {
-    const coordinates = $svg_private.buildShipCoordinatesObject(options);
-    options.d = $svg_private.buildDAttributeForShip(options, coordinates);
+$svgPrivate.drawShipPaths = function (parentNode, options) {
+    const coordinates = $svgPrivate.buildShipCoordinatesObject(options);
+    options.d = $svgPrivate.buildDAttributeForShip(options, coordinates);
 
-    const outputElement = $svg_private.setBasicAttributes('path', options);
+    const outputElement = $svgPrivate.setBasicAttributes('path', options);
 
     parentNode.appendChild(outputElement);
+};
+
+$svgPrivate.drawShipGuide = function (groupTag, options) {
+    // console.log(options);
+    let guideCircle = $svgPrivate.drawCircle(options);
+    console.log(guideCircle);
+    groupTag.appendChild(guideCircle);
 };
 
 /**
@@ -160,10 +206,15 @@ $svg.drawShip = function (gameNode, options = {}) {
     groupTagOptions = $helpers.assignDefaultValues('groupTagSVG', groupTagOptions, gameNode);
     flameOptions = $helpers.assignDefaultValues('shipFlame', flameOptions, gameNode, options);
 
-    const shipGroupTag = $svg_private.setBasicAttributes('g', groupTagOptions);
+    const shipGroupTag = $svgPrivate.setBasicAttributes('g', groupTagOptions);
 
+    if (options.guide) {
+        let guideOptions = options.guideOptions ?? {};
+        guideOptions = $helpers.assignDefaultValues('shipGuide', guideOptions, gameNode, options);
+        $svgPrivate.drawShipGuide(shipGroupTag, guideOptions);
+    }
     $svg.drawFlame(shipGroupTag, flameOptions);
-    $svg_private.drawShipPaths(shipGroupTag, options);
+    $svgPrivate.drawShipPaths(shipGroupTag, options);
     gameNode.appendChild(shipGroupTag);
 };
 

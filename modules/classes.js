@@ -7,6 +7,12 @@ export class Game {
     constructor(options) {
         this.guide = options.guide;
     }
+
+    drawGrid() {
+        $svg.drawGrid(gameNode);
+    }
+    //TODO Add switch guide method
+    displayGrid() {}
 }
 export class Mass {
     constructor(options) {
@@ -85,4 +91,6 @@ export class Ship extends Mass {
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this, this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
     }
+
+    //TODO Add switch guide method
 }

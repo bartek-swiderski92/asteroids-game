@@ -7,8 +7,8 @@ import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
 
 const gameClass = new Game({guide: true});
-console.log(gameClass);
-const ship = new Ship();
+gameClass.drawGrid(gameNode);
+const ship = new Ship({guide: true});
 document.addEventListener('keydown', (event) => $helpers.handleKeyUp(event, true, ship));
 document.addEventListener('keyup', (event) => $helpers.handleKeyUp(event, false, ship));
 

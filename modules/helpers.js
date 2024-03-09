@@ -52,6 +52,23 @@ $helpers.kebabToCamelCase = function (string) {
 
 $helpers.assignDefaultValues = function (gameElement, options, gameNode, globalOptions) {
     switch (gameElement) {
+        case 'grid':
+            options.id = options.id ?? 'grid';
+            options.minor = options.minor ?? 10;
+            options.major = options.major ?? options.minor * 5;
+            options.lineColor = options.lineColor ?? '#00FF00';
+            options.textColor = options.textColor ?? '#009900';
+            break;
+        case 'shipGuide':
+            options.id = options.id ?? 'ship-guide';
+            options.angle = globalOptions.angle ?? 0;
+            options.cx = globalOptions.x;
+            options.cy = globalOptions.y;
+            options.r = options.r ?? globalOptions.radius;
+            options.stroke = options.stroke ?? 'white';
+            options.fill = options.fill ?? 'rgba(0, 0, 0, .6)';
+
+            break;
         case 'massClass':
             options.mass = options.mass ?? 1;
             options.radius = options.radius ?? 50;
