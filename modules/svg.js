@@ -159,11 +159,17 @@ $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
     });
     if (guide) {
         const pointRadius = 0.02 * radius;
+        options.guideWaypoints = {
+            fill: 'white',
+            stroke: 'white',
+            strokeWidth: '1px',
+            d: ''
+            // d: `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`
+        };
         coordinates.waypoints.forEach((waypoint) => {
             let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
-            if (waypoint.guidelineX) {
-                // dAttribute += `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
-            }
+
+            options.guideWaypoints.d += `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
         });
     }
     return dAttribute;
@@ -181,7 +187,9 @@ $svgPrivate.drawShipPaths = function (parentNode, options) {
     options.d = $svgPrivate.buildDAttributeForShip(options, coordinates);
 
     const outputElement = $svgPrivate.setBasicAttributes('path', options);
-
+    const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
+    console.log(waypoints);
+    options.guideGroupTag.appendChild(waypoints);
     parentNode.appendChild(outputElement);
 };
 
@@ -207,13 +215,17 @@ $svg.drawShip = function (gameNode, options = {}) {
     flameOptions = $helpers.assignDefaultValues('shipFlame', flameOptions, gameNode, options);
 
     const shipGroupTag = $svgPrivate.setBasicAttributes('g', groupTagOptions);
+    let guideGroupTag;
 
+    $svg.drawFlame(shipGroupTag, flameOptions);
     if (options.guide) {
+        guideGroupTag = $svgPrivate.setBasicAttributes('g', {id: 'guide'});
         let guideOptions = options.guideOptions ?? {};
         guideOptions = $helpers.assignDefaultValues('shipGuide', guideOptions, gameNode, options);
-        $svgPrivate.drawShipGuide(shipGroupTag, guideOptions);
+        $svgPrivate.drawShipGuide(guideGroupTag, guideOptions);
+        options.guideGroupTag = guideGroupTag;
     }
-    $svg.drawFlame(shipGroupTag, flameOptions);
+    shipGroupTag.appendChild(guideGroupTag);
     $svgPrivate.drawShipPaths(shipGroupTag, options);
     gameNode.appendChild(shipGroupTag);
 };
