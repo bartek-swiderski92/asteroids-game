@@ -1,6 +1,23 @@
 /** @format */
 
 const $helpers = {};
+
+$helpers.handleKeyUp = function (event, value, ship) {
+    // console.log(event);
+    // console.log(value);
+    let nothingHandled;
+    switch (event.key || event.keyCode) {
+        case 'ArrowUp':
+        case '38':
+            ship.thrusterOn = value;
+            break;
+        default:
+            nothingHandled = true;
+    }
+    if (nothingHandled) {
+        event.preventDefault();
+    }
+};
 /**
  * @public
  * @description
