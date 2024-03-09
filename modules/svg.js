@@ -155,7 +155,6 @@ $svg_private.drawShipPaths = function (parentNode, options) {
  * @returns void
  */
 $svg.drawShip = function (gameNode, options = {}) {
-    // options = $helpers.assignDefaultValues('shipSVG', options, gameNode);
     let groupTagOptions = options.groupTagOptions ?? {};
     let flameOptions = options.flameOptions ?? {};
     groupTagOptions = $helpers.assignDefaultValues('groupTagSVG', groupTagOptions, gameNode);
