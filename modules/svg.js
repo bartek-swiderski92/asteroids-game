@@ -4,7 +4,7 @@ import $helpers from '../modules/helpers.js';
 const $svg = {};
 const $svgPrivate = {};
 
-$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy'];
+$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy', 'display'];
 
 $svgPrivate.drawCircle = function (options = {}) {
     let circle = $svgPrivate.setBasicAttributes('circle', options);

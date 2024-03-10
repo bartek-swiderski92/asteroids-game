@@ -104,7 +104,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.id = options.id ?? 'ship-group-tag';
             break;
         case 'shipFlame':
-            options.id = options.id ?? 'ship-flame';
+            options.id = 'ship-flame';
             options.lineWidth = options.lineWidth ?? 3;
             options.stroke = options.stroke ?? 'yellow';
             options.fill = options.fill ?? 'red';
@@ -114,6 +114,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.controlPointY = globalOptions.initialY;
             options.posX = globalOptions.initialX + (Math.cos(Math.PI - globalOptions.angle * 0.4) * globalOptions.radius) / 2;
             options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
+            options.display = 'none';
             break;
     }
     return options;

@@ -100,8 +100,12 @@ export class Ship extends Mass {
     draw(asteroids) {
         $svg.drawShip(asteroids, this);
     }
-
+    switchThruster() {
+        const targetElement = document.querySelector(`#ship-flame`);
+        targetElement.style.display = !this.thrusterOn ? 'inline' : 'none';
+    }
     update(elapsed) {
+        this.switchThruster();
         this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
