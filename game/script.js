@@ -13,3 +13,4 @@ document.addEventListener('keydown', (event) => $helpers.handleKeyUp(event, true
 document.addEventListener('keyup', (event) => $helpers.handleKeyUp(event, false, ship));
 
 ship.draw(gameNode);
+ship.init();

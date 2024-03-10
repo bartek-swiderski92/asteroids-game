@@ -67,7 +67,7 @@ export class Mass {
 
     animateElement() {
         const targetElement = document.querySelector(`#${this.groupId}`);
-        targetElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.angle}rad)`);
+        targetElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
     }
 }
 export class Ship extends Mass {
@@ -77,6 +77,8 @@ export class Ship extends Mass {
 
         this.id = options.id;
         this.groupId = options.groupId;
+        this.initialX = options.initialX;
+        this.initialY = options.initialY;
 
         //Appearance
         this.lineWidth = options.lineWidth;
@@ -87,6 +89,7 @@ export class Ship extends Mass {
         this.guide = options.guide;
 
         //State
+        this.rotateValue = options.rotateValue;
         this.thrusterPower = options.thrusterPower;
         this.steeringPower = options.thrusterPower;
         this.thrusterOn = false;
@@ -102,6 +105,10 @@ export class Ship extends Mass {
         this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
+    }
+
+    init() {
+        this.animateElement();
     }
 
     //TODO Add switch guide method

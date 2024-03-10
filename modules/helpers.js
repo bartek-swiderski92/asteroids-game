@@ -62,8 +62,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'shipGuide':
             options.id = options.id ?? 'ship-guide';
             options.angle = globalOptions.angle ?? 0;
-            options.cx = globalOptions.x;
-            options.cy = globalOptions.y;
+            options.cx = globalOptions.initialX;
+            options.cy = globalOptions.initialY;
             options.r = options.r ?? globalOptions.radius;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
@@ -85,11 +85,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'shipClass':
             options.id = options.id ?? 'ship';
             options.groupId = options.groupId ?? 'ship-group-tag';
+            options.initialX = options.initialX ?? 0;
+            options.initialY = options.initialY ?? 0;
             options.x = options.x ?? gameNode.clientWidth / 2;
             options.y = options.y ?? gameNode.clientHeight / 2;
             options.mass = options.mass ?? 10;
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
+            options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
             options.thrusterPower = options.thrusterPower ?? 1;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
@@ -108,12 +111,12 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.fill = options.fill ?? 'red';
             options.shipAngle = globalOptions.angle;
             options.shipRadius = globalOptions.radius;
-            options.x = globalOptions.x + (Math.cos(Math.PI + options.shipAngle * 0.4) * options.shipRadius) / 2;
-            options.y = globalOptions.y + (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
-            options.controlPointX = globalOptions.x - options.shipRadius * 2;
-            options.controlPointY = globalOptions.y;
-            options.posX = globalOptions.x + (Math.cos(Math.PI - options.shipAngle * 0.4) * options.shipRadius) / 2;
-            options.posY = globalOptions.y - (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
+            options.x = globalOptions.initialX + (Math.cos(Math.PI + options.shipAngle * 0.4) * options.shipRadius) / 2;
+            options.y = globalOptions.initialY + (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
+            options.controlPointX = globalOptions.initialX - options.shipRadius * 2;
+            options.controlPointY = globalOptions.initialY;
+            options.posX = globalOptions.initialX + (Math.cos(Math.PI - options.shipAngle * 0.4) * options.shipRadius) / 2;
+            options.posY = globalOptions.initialY - (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
             break;
     }
     return options;

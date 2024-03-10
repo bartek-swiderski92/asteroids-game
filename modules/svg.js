@@ -87,33 +87,33 @@ $svgPrivate.filterAttributes = function (options) {
  * @returns {Object}
  * */
 $svgPrivate.buildShipCoordinatesObject = function (options) {
-    let {x, y, radius, angle, curve1, curve2} = options;
+    let {initialX, initialY, radius, angle, curve1, curve2} = options;
     return {
-        startingPoint: {posX: x + radius, posY: y},
+        startingPoint: {posX: initialX + radius, posY: initialY},
         waypoints: [
             {
-                controlPointX: Math.cos(angle) * radius * curve2 + x,
-                controlPointY: Math.sin(angle) * radius * curve2 + y,
-                posX: x + Math.cos(Math.PI - angle) * radius,
-                posY: y + Math.sin(Math.PI - angle) * radius,
-                guidelineX: x + Math.cos(angle) * radius,
-                guidelineY: y + Math.sin(angle) * radius
+                controlPointX: Math.cos(angle) * radius * curve2 + initialX,
+                controlPointY: Math.sin(angle) * radius * curve2 + initialY,
+                posX: initialX + Math.cos(Math.PI - angle) * radius,
+                posY: initialY + Math.sin(Math.PI - angle) * radius,
+                guidelineX: initialX + Math.cos(angle) * radius,
+                guidelineY: initialY + Math.sin(angle) * radius
             },
             {
-                controlPointX: -radius * curve1 + x,
-                controlPointY: y,
-                posX: x + Math.cos(Math.PI + angle) * radius,
-                posY: y + Math.sin(Math.PI + angle) * radius,
-                guidelineX: x - radius,
-                guidelineY: y
+                controlPointX: -radius * curve1 + initialX,
+                controlPointY: initialY,
+                posX: initialX + Math.cos(Math.PI + angle) * radius,
+                posY: initialY + Math.sin(Math.PI + angle) * radius,
+                guidelineX: initialX - radius,
+                guidelineY: initialY
             },
             {
-                controlPointX: Math.cos(-angle) * radius * curve2 + x,
-                controlPointY: Math.sin(-angle) * radius * curve2 + y,
-                posX: x + radius,
-                posY: y,
-                guidelineX: x + Math.cos(angle) * radius,
-                guidelineY: y - Math.sin(angle) * radius
+                controlPointX: Math.cos(-angle) * radius * curve2 + initialX,
+                controlPointY: Math.sin(-angle) * radius * curve2 + initialY,
+                posX: initialX + radius,
+                posY: initialY,
+                guidelineX: initialX + Math.cos(angle) * radius,
+                guidelineY: initialY - Math.sin(angle) * radius
             }
         ]
     };
@@ -151,7 +151,7 @@ $svg.drawFlame = function (parentNode, options) {
  * @returns {String} dAttribute
  */
 $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
-    let {x, y, guide, radius} = options;
+    let {initialX, initialY, guide, radius} = options;
     let dAttribute = `M ${coordinates.startingPoint.posX} ${coordinates.startingPoint.posY}`;
     coordinates.waypoints.forEach((waypoint) => {
         let {controlPointX, controlPointY, posX, posY} = waypoint;
@@ -164,7 +164,7 @@ $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
         coordinates.waypoints.forEach((waypoint) => {
             let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
 
-            options.guideWaypoints.d += `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
+            options.guideWaypoints.d += `M ${initialX} ${initialY} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
         });
     }
     return dAttribute;
