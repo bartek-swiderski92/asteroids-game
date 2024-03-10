@@ -11,8 +11,8 @@ $svgPrivate.drawCircle = function (options = {}) {
     return circle;
 };
 
-$svg.drawGrid = function (gameNode, options = {}) {
-    options = $helpers.assignDefaultValues('grid', options);
+$svg.drawGrid = function (gameNode, gameInstance, options = {}) {
+    options = $helpers.assignDefaultValues('grid', options, gameNode, gameInstance);
     const {minor, major, lineColor, textColor} = options;
     const boardWidth = gameNode.clientWidth;
     const boardHeight = gameNode.clientHeight;
@@ -157,16 +157,15 @@ $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
         let {controlPointX, controlPointY, posX, posY} = waypoint;
         dAttribute += `Q ${controlPointX} ${controlPointY} ${posX} ${posY}`;
     });
-    if (guide) {
-        const pointRadius = 0.02 * radius;
-        options.guideWaypoints = $helpers.assignDefaultValues('guideWaypoints');
+    const pointRadius = 0.02 * radius;
+    options.guideWaypoints = $helpers.assignDefaultValues('guideWaypoints');
 
-        coordinates.waypoints.forEach((waypoint) => {
-            let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
+    coordinates.waypoints.forEach((waypoint) => {
+        let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
 
-            options.guideWaypoints.d += `M ${initialX} ${initialY} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
-        });
-    }
+        options.guideWaypoints.d += `M ${initialX} ${initialY} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`;
+    });
+
     return dAttribute;
 };
 /**
@@ -182,10 +181,9 @@ $svgPrivate.drawShipPaths = function (parentNode, options) {
     options.d = $svgPrivate.buildDAttributeForShip(options, coordinates);
 
     const outputElement = $svgPrivate.setBasicAttributes('path', options);
-    if (options.guide) {
-        const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
-        options.guideGroupTag.appendChild(waypoints);
-    }
+    const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
+    options.guideGroupTag.appendChild(waypoints);
+
     parentNode.appendChild(outputElement);
 };
 
@@ -212,17 +210,15 @@ $svg.drawShip = function (gameNode, options = {}) {
     let guideGroupTag;
 
     $svg.drawFlame(shipGroupTag, flameOptions);
-    if (options.guide) {
-        guideGroupTag = $svgPrivate.setBasicAttributes('g', {id: 'guide'});
-        let guideOptions = options.guideOptions ?? {};
-        guideOptions = $helpers.assignDefaultValues('shipGuide', guideOptions, gameNode, options);
-        $svgPrivate.drawShipGuide(guideGroupTag, guideOptions);
-        options.guideGroupTag = guideGroupTag;
-    }
+    let guideGroupTagOptions = $helpers.assignDefaultValues('guideGroupTag', groupTagOptions, gameNode, options);
+    guideGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTagOptions);
+    let guideOptions = options.guideOptions ?? {};
+    guideOptions = $helpers.assignDefaultValues('shipGuide', guideOptions, gameNode, options);
+    $svgPrivate.drawShipGuide(guideGroupTag, guideOptions);
+    options.guideGroupTag = guideGroupTag;
+
     $svgPrivate.drawShipPaths(shipGroupTag, options);
-    if (options.guide) {
-        shipGroupTag.appendChild(guideGroupTag);
-    }
+    shipGroupTag.appendChild(guideGroupTag);
     gameNode.appendChild(shipGroupTag);
 };
 

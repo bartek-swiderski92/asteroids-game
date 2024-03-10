@@ -2,7 +2,7 @@
 
 const $helpers = {};
 
-$helpers.handleKeyPress = function (event, value, ship) {
+$helpers.handleKeyPress = function (event, value, game, ship) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
@@ -19,8 +19,10 @@ $helpers.handleKeyPress = function (event, value, ship) {
             break;
         case 'g':
         case '71':
-            if (value) game.guide = !game.guide;
-            ship.rightThrusterOn = value;
+            if (value) {
+                game.switchGrid();
+                ship.switchGuide();
+            }
             break;
         default:
             nothingHandled = true;
@@ -58,6 +60,11 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.major = options.major ?? options.minor * 5;
             options.lineColor = options.lineColor ?? '#00FF00';
             options.textColor = options.textColor ?? '#009900';
+            options.display = globalOptions.guide ? 'inline' : 'none';
+            break;
+        case 'guideGroupTag':
+            options.id = 'guide';
+            options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'shipGuide':
             options.id = 'ship-guide';
@@ -92,7 +99,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
             options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
-            options.thrusterPower = options.thrusterPower ?? 1;
+            options.thrusterPower = options.thrusterPower ?? 1000;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';
