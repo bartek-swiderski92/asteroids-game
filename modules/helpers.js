@@ -2,7 +2,7 @@
 
 const $helpers = {};
 
-$helpers.handleKeyUp = function (event, value, ship) {
+$helpers.handleKeyPress = function (event, value, ship) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
@@ -84,12 +84,13 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'shipClass':
             options.id = options.id ?? 'ship';
+            options.groupId = options.groupId ?? 'ship-group-tag';
             options.x = options.x ?? gameNode.clientWidth / 2;
             options.y = options.y ?? gameNode.clientHeight / 2;
             options.mass = options.mass ?? 10;
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.thrusterPower = options.thrusterPower ?? 1000;
+            options.thrusterPower = options.thrusterPower ?? 1;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';

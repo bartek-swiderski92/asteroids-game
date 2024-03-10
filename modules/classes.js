@@ -66,7 +66,7 @@ export class Mass {
     }
 
     animateElement() {
-        const targetElement = document.querySelector(`#${this.id}`);
+        const targetElement = document.querySelector(`#${this.groupId}`);
         targetElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.angle}rad)`);
     }
 }
@@ -76,6 +76,7 @@ export class Ship extends Mass {
         super(options);
 
         this.id = options.id;
+        this.groupId = options.groupId;
 
         //Appearance
         this.lineWidth = options.lineWidth;
@@ -99,7 +100,7 @@ export class Ship extends Mass {
 
     update(elapsed) {
         this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
-        this.twist((this.rightThrusterOn - this.leftThrusterOn) * this, this.steeringPower, elapsed);
+        this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
     }
 
