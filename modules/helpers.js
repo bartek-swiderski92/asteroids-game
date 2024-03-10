@@ -61,7 +61,6 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'shipGuide':
             options.id = options.id ?? 'ship-guide';
-            options.angle = globalOptions.angle ?? 0;
             options.cx = globalOptions.initialX;
             options.cy = globalOptions.initialY;
             options.r = options.r ?? globalOptions.radius;
@@ -109,14 +108,12 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.lineWidth = options.lineWidth ?? 3;
             options.stroke = options.stroke ?? 'yellow';
             options.fill = options.fill ?? 'red';
-            options.shipAngle = globalOptions.angle;
-            options.shipRadius = globalOptions.radius;
-            options.x = globalOptions.initialX + (Math.cos(Math.PI + options.shipAngle * 0.4) * options.shipRadius) / 2;
-            options.y = globalOptions.initialY + (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
-            options.controlPointX = globalOptions.initialX - options.shipRadius * 2;
+            options.x = globalOptions.initialX + (Math.cos(Math.PI + globalOptions.angle * 0.4) * globalOptions.radius) / 2;
+            options.y = globalOptions.initialY + (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
+            options.controlPointX = globalOptions.initialX - globalOptions.radius * 2;
             options.controlPointY = globalOptions.initialY;
-            options.posX = globalOptions.initialX + (Math.cos(Math.PI - options.shipAngle * 0.4) * options.shipRadius) / 2;
-            options.posY = globalOptions.initialY - (Math.sin(Math.PI - options.shipAngle * 0.8) * options.shipRadius) / 2;
+            options.posX = globalOptions.initialX + (Math.cos(Math.PI - globalOptions.angle * 0.4) * globalOptions.radius) / 2;
+            options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
             break;
     }
     return options;
