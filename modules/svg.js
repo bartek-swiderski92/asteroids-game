@@ -145,7 +145,7 @@ $svg.drawFlame = function (parentNode, options) {
 /**
  * @public
  * @description
- * Builds the d attribute for the ship
+ * Builds the d attribute for the ship, modifies guideWaypoints where necessary
  * @param {Object} options options defining the element
  * @param {Object} coordinates coordinates of the ship
  * @returns {String} dAttribute
@@ -159,13 +159,8 @@ $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
     });
     if (guide) {
         const pointRadius = 0.02 * radius;
-        options.guideWaypoints = {
-            fill: 'white',
-            stroke: 'white',
-            strokeWidth: '1px',
-            d: ''
-            // d: `M ${x} ${y} L ${guidelineX} ${guidelineY} M ${controlPointX - pointRadius} ${controlPointY} a ${pointRadius} ${pointRadius} 0 1 0 ${pointRadius * 2} 0 a ${pointRadius} ${pointRadius} 0 1 0 ${-pointRadius * 2} 0`
-        };
+        options.guideWaypoints = $helpers.assignDefaultValues('guideWaypoints');
+
         coordinates.waypoints.forEach((waypoint) => {
             let {guidelineX, guidelineY, controlPointX, controlPointY} = waypoint;
 
@@ -188,15 +183,12 @@ $svgPrivate.drawShipPaths = function (parentNode, options) {
 
     const outputElement = $svgPrivate.setBasicAttributes('path', options);
     const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
-    console.log(waypoints);
     options.guideGroupTag.appendChild(waypoints);
     parentNode.appendChild(outputElement);
 };
 
 $svgPrivate.drawShipGuide = function (groupTag, options) {
-    // console.log(options);
     let guideCircle = $svgPrivate.drawCircle(options);
-    console.log(guideCircle);
     groupTag.appendChild(guideCircle);
 };
 
@@ -225,8 +217,8 @@ $svg.drawShip = function (gameNode, options = {}) {
         $svgPrivate.drawShipGuide(guideGroupTag, guideOptions);
         options.guideGroupTag = guideGroupTag;
     }
-    shipGroupTag.appendChild(guideGroupTag);
     $svgPrivate.drawShipPaths(shipGroupTag, options);
+    shipGroupTag.appendChild(guideGroupTag);
     gameNode.appendChild(shipGroupTag);
 };
 

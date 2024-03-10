@@ -50,7 +50,7 @@ $helpers.kebabToCamelCase = function (string) {
  * @returns {Object} options
  * */
 
-$helpers.assignDefaultValues = function (gameElement, options, gameNode, globalOptions) {
+$helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, globalOptions) {
     switch (gameElement) {
         case 'grid':
             options.id = options.id ?? 'grid';
@@ -66,8 +66,13 @@ $helpers.assignDefaultValues = function (gameElement, options, gameNode, globalO
             options.cy = globalOptions.y;
             options.r = options.r ?? globalOptions.radius;
             options.stroke = options.stroke ?? 'white';
-            options.fill = options.fill ?? 'rgba(0, 0, 0, .6)';
-
+            options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
+            break;
+        case 'guideWaypoints':
+            options.fill = 'white';
+            options.stroke = 'rgba(255,255,255, 0.5';
+            options.strokeWidth = '1px';
+            options.d = '';
             break;
         case 'massClass':
             options.mass = options.mass ?? 1;
