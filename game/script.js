@@ -8,7 +8,7 @@ const gameNode = document.querySelector('#game');
 
 const gameClass = new Game({guide: true});
 gameClass.drawGrid(gameNode);
-const ship = new Ship({guide: true});
+const ship = new Ship({guide: gameClass.guide});
 document.addEventListener('keydown', (event) => $helpers.handleKeyUp(event, true, ship));
 document.addEventListener('keyup', (event) => $helpers.handleKeyUp(event, false, ship));
 

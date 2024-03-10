@@ -87,7 +87,7 @@ export class Ship extends Mass {
     }
 
     update(elapsed) {
-        this.push(this.angle, this.thruster_on * this.thruster_power, elapsed);
+        this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this, this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
     }

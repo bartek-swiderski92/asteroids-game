@@ -182,8 +182,10 @@ $svgPrivate.drawShipPaths = function (parentNode, options) {
     options.d = $svgPrivate.buildDAttributeForShip(options, coordinates);
 
     const outputElement = $svgPrivate.setBasicAttributes('path', options);
-    const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
-    options.guideGroupTag.appendChild(waypoints);
+    if (options.guide) {
+        const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
+        options.guideGroupTag.appendChild(waypoints);
+    }
     parentNode.appendChild(outputElement);
 };
 
@@ -218,7 +220,9 @@ $svg.drawShip = function (gameNode, options = {}) {
         options.guideGroupTag = guideGroupTag;
     }
     $svgPrivate.drawShipPaths(shipGroupTag, options);
-    shipGroupTag.appendChild(guideGroupTag);
+    if (options.guide) {
+        shipGroupTag.appendChild(guideGroupTag);
+    }
     gameNode.appendChild(shipGroupTag);
 };
 
