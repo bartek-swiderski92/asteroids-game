@@ -74,16 +74,27 @@ export class Ship extends Mass {
     constructor(options = {}) {
         options = $helpers.assignDefaultValues('shipClass', options, gameNode);
         super(options);
-        this.options = options;
+
+        this.id = options.id;
+
+        //Appearance
+        this.lineWidth = options.lineWidth;
+        this.stroke = options.stroke;
+        this.fill = options.fill;
+        this.curve1 = options.curve1;
+        this.curve2 = options.curve2;
+        this.guide = options.guide;
+
+        //State
         this.thrusterPower = options.thrusterPower;
-        this.steeringPower = options.thrusterPower / 20;
+        this.steeringPower = options.thrusterPower;
         this.thrusterOn = false;
         this.rightThrusterOn = false;
         this.leftThrusterOn = false;
     }
 
     draw(asteroids) {
-        $svg.drawShip(asteroids, this.options);
+        $svg.drawShip(asteroids, this);
     }
 
     update(elapsed) {

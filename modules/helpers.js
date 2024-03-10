@@ -95,6 +95,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.fill = options.fill ?? 'black';
             options.curve1 = options.curve1 ?? 0.25;
             options.curve2 = options.curve2 ?? 0.75;
+            options.guide = options.guide ?? false;
             break;
         case 'groupTagSVG':
             options.id = options.id ?? 'ship-group-tag';
