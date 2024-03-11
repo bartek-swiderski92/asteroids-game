@@ -222,4 +222,14 @@ $svg.drawShip = function (gameNode, options = {}) {
     gameNode.appendChild(shipGroupTag);
 };
 
+$svg.drawProjectile = function (gameNode, projectileInstance) {
+    let projectileClone = structuredClone(projectileInstance);
+    projectileClone.cx = projectileInstance.x;
+    projectileClone.cy = projectileInstance.y;
+    projectileClone.r = projectileInstance.radius;
+
+    let circle = $svgPrivate.drawCircle(projectileClone);
+    gameNode.appendChild(circle);
+};
+
 export default $svg;

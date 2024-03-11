@@ -125,3 +125,33 @@ export class Ship extends Mass {
         targetElement.style.display = this.guide ? 'inline' : 'none';
     }
 }
+
+export class Projectile extends Mass {
+    constructor(x, y, options = {}) {
+        options = $helpers.assignDefaultValues('projectile', options, gameNode);
+        super(options);
+
+        //Appearance
+        this.lineWidth = options.lineWidth;
+        this.stroke = options.stroke;
+        this.fill = options.fill;
+        this.guide = options.guide;
+
+        this.x = x;
+        this.y = y;
+        this.density = options.density;
+        this.mass = options.mass;
+        this.radius = options.radius ?? Math.sqrt(this.mass / this.density / Math.PI);
+        this.lifetime = options.lifetime;
+        this.life = options.life;
+    }
+
+    draw(gameNode) {
+        $svg.drawProjectile(gameNode, this);
+    }
+
+    update(elapsed, c) {
+        this.life -= elapsed / this.lifetime;
+        Mass.prototype.update.apply(this, arguments);
+    }
+}

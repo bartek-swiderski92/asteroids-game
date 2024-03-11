@@ -1,13 +1,13 @@
 /** @format */
-console.log('dev');
 import $svg from '../modules/svg.js';
-import {Game, Ship} from '../modules/classes.js';
+import {Game, Ship, Projectile} from '../modules/classes.js';
 import $helpers from '../modules/helpers.js';
 
 const gameNode = document.querySelector('#game');
 
 const game = new Game({guide: false});
 const ship = new Ship({guide: game.guide});
+// const projectile = new Projectile(200, 200);
 document.addEventListener('keydown', (event) => $helpers.handleKeyPress(event, true, game, ship));
 document.addEventListener('keyup', (event) => $helpers.handleKeyPress(event, false, game, ship));
 
@@ -35,3 +35,4 @@ function frame(timestamp) {
 draw();
 
 window.requestAnimationFrame(frame);
+// projectile.draw(gameNode, projectile);

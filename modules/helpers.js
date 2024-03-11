@@ -123,6 +123,17 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
             options.display = 'none';
             break;
+        case 'projectile':
+            options.class = 'projectile';
+            options.lineWidth = options.lineWidth ?? 3;
+            options.stroke = options.stroke ?? 'yellow';
+            options.fill = options.fill ?? 'red';
+            options.density = options.density ?? 0.001;
+            options.mass = options.mass ?? 0.1;
+            options.radius = Math.sqrt(options.mass / options.density / Math.PI);
+            options.lifetime = options.lifetime ?? 0.001;
+            options.life = options.life ?? 1.0;
+            break;
     }
     return options;
 };
