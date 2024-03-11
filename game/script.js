@@ -1,5 +1,5 @@
 /** @format */
-
+console.log('prod');
 import $svg from '../modules/svg.js';
 import {Game, Ship} from '../modules/classes.js';
 import $helpers from '../modules/helpers.js';
