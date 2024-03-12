@@ -131,7 +131,7 @@ export class Ship extends Mass {
     }
 
     projectile(gameNode, projectileCount, elapsed) {
-        let projectile = new Projectile(this.x, this.y, projectileCount);
+        let projectile = new Projectile(this, projectileCount);
         projectile.push(this.rotateValue, this.weaponPower, elapsed);
         projectile.draw(gameNode);
         this.loaded = false;
@@ -179,14 +179,16 @@ export class Asteroid extends Mass {
 }
 
 export class Projectile extends Mass {
-    constructor(x, y, projectileCount, options = {}) {
+    constructor(ship, projectileCount, options = {}) {
+        console.log(ship);
         options = $helpers.assignDefaultValues('projectile', options, gameNode);
         super(options);
         this.id = `projectile-${projectileCount}`;
-        this.x = x;
-        this.y = y;
+        this.x = ship.x - Math.cos(Math.PI - ship.rotateValue) * ship.radius;
+        this.y = ship.y + Math.sin(Math.PI - ship.rotateValue) * ship.radius;
         this.lifetime = options.lifetime;
         this.life = options.life;
+        console.log(Math.cos(ship.rotateValue) * ship.radius * ship.x + ship.x);
     }
 
     draw(gameNode) {
