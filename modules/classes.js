@@ -35,6 +35,7 @@ export class Mass {
         this.xSpeed = options.xSpeed;
         this.ySpeed = options.ySpeed;
         this.rotationSpeed = options.rotationSpeed;
+        this.rotateValue = options.rotateValue;
     }
 
     update(elapsed) {
@@ -95,7 +96,6 @@ export class Ship extends Mass {
         this.curve2 = options.curve2;
 
         //State
-        this.rotateValue = options.rotateValue;
         this.thrusterPower = options.thrusterPower;
         this.steeringPower = options.thrusterPower / 20;
         this.thrusterOn = false;
@@ -106,6 +106,11 @@ export class Ship extends Mass {
     draw(asteroids) {
         $svg.drawShip(asteroids, this);
     }
+
+    init() {
+        this.animateElement();
+    }
+
     switchThruster() {
         const targetElement = document.querySelector(`#ship-flame`);
         targetElement.style.display = this.thrusterOn ? 'inline' : 'none';
@@ -117,12 +122,8 @@ export class Ship extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    init() {
-        this.animateElement();
-    }
-
     switchGuide() {
-        const targetElement = document.querySelector(`#guide`);
+        const targetElement = document.querySelector(`#ship-guide`);
         this.guide = !this.guide;
         targetElement.style.display = this.guide ? 'inline' : 'none';
     }
@@ -130,9 +131,12 @@ export class Ship extends Mass {
 
 export class Asteroid extends Mass {
     constructor(id, options = {}) {
+        options.id = id;
         options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
         super(options);
         this.id = id;
+        this.groupId = options.groupId;
+        this.class = options.class;
         this.circumference = 2 * Math.PI * this.radius;
         this.segments = Math.min(25, Math.max(5, Math.ceil(this.circumference / 15)));
         this.noise = options.noise;
@@ -144,6 +148,16 @@ export class Asteroid extends Mass {
 
     draw(gameNode) {
         $svg.drawAsteroid(gameNode, this);
+    }
+
+    init() {
+        this.animateElement();
+    }
+
+    switchGuide() {
+        const targetElement = document.querySelector(`#asteroid-guide-group-tag-${this.id}`);
+        this.guide = !this.guide;
+        targetElement.style.display = this.guide ? 'inline' : 'none';
     }
 }
 

@@ -9,14 +9,16 @@ const gameNode = document.querySelector('#game');
 const asteroids = [];
 for (let i = 0; i < amountOfAsteroids; i++) {
     let asteroid = new Asteroid(`asteroid-${i}`);
+    asteroid.push(Math.random() * 2 * Math.PI, 2000, 60);
+    asteroid.twist((Math.random() - 0.5) * 500, 60);
     asteroids.push(asteroid);
 }
 
 const game = new Game({guide: false});
 const ship = new Ship({guide: game.guide});
 // const projectile = new Projectile(200, 200);
-document.addEventListener('keydown', (event) => $helpers.handleKeyPress(event, true, game, ship));
-document.addEventListener('keyup', (event) => $helpers.handleKeyPress(event, false, game, ship));
+document.addEventListener('keydown', (event) => $helpers.handleKeyPress(event, true, game, ship, asteroids));
+document.addEventListener('keyup', (event) => $helpers.handleKeyPress(event, false, game, ship, asteroids));
 
 function draw() {
     game.drawGrid(gameNode);
@@ -24,12 +26,14 @@ function draw() {
     ship.draw(gameNode);
     asteroids.forEach((asteroid) => {
         asteroid.draw(gameNode);
+        asteroid.init();
     });
     ship.init();
 }
 
 function update(elapsed) {
     ship.update(elapsed);
+    asteroids.forEach((asteroid) => asteroid.update(elapsed));
 }
 
 let previous;

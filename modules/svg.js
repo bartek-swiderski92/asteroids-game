@@ -244,20 +244,20 @@ $svgPrivate.crateAsteroidsElement = function (options) {
     return pathElement;
 };
 $svg.drawAsteroid = function (gameNode, options = {}) {
-    let asteroidGroupTag;
-    let optionsClone = structuredClone(options);
-    optionsClone.cx = 0;
-    optionsClone.cy = 0;
-    optionsClone.r = options.radius;
-    const guideCircle = $svgPrivate.drawCircle(optionsClone);
-    let guideGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: `group-tag-${options.id}`}, gameNode, options);
-    asteroidGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTagOptions);
+    const asteroidGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: options.groupId}, gameNode, options);
+    const asteroidGroupTag = $svgPrivate.setBasicAttributes('g', asteroidGroupTagOptions);
     const asteroidsElement = $svgPrivate.crateAsteroidsElement(options);
 
-    asteroidGroupTag.appendChild(guideCircle);
-    asteroidGroupTag.appendChild(asteroidsElement);
-    asteroidGroupTag.style.transform = `translate(${options.x}px, ${options.y}px)`;
+    //Setting up guide
+    let guideCircleOptions = structuredClone(options);
+    guideCircleOptions = $helpers.assignDefaultValues('asteroidGuide', guideCircleOptions, gameNode, options);
+    const guideCircle = $svgPrivate.drawCircle(guideCircleOptions);
+    const guideGroupTag = $helpers.assignDefaultValues('asteroidGuideGroupTag', {}, gameNode, options);
+    const asteroidGuideGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTag);
+    asteroidGuideGroupTag.appendChild(guideCircle);
+    asteroidGroupTag.appendChild(asteroidGuideGroupTag);
 
+    asteroidGroupTag.appendChild(asteroidsElement);
     gameNode.appendChild(asteroidGroupTag);
 };
 

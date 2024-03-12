@@ -2,7 +2,7 @@
 
 const $helpers = {};
 
-$helpers.handleKeyPress = function (event, value, game, ship) {
+$helpers.handleKeyPress = function (event, value, game, ship, asteroids) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
@@ -22,6 +22,7 @@ $helpers.handleKeyPress = function (event, value, game, ship) {
             if (value) {
                 game.switchGrid();
                 ship.switchGuide();
+                asteroids.forEach((asteroid) => asteroid.switchGuide());
             }
             break;
         default:
@@ -63,7 +64,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'guideGroupTag':
-            options.id = 'guide';
+            options.id = 'ship-guide';
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'shipGuide':
@@ -87,6 +88,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.xSpeed = options.xSpeed ?? 0;
             options.ySpeed = options.ySpeed ?? 0;
             options.rotationSpeed = options.rotationSpeed ?? 0;
+            options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
             break;
         case 'shipClass':
             options.id = options.id ?? 'ship';
@@ -98,7 +100,6 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.mass = options.mass ?? 10;
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
             options.thrusterPower = options.thrusterPower ?? 1000;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
@@ -128,7 +129,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.lineWidth = options.lineWidth ?? 1.75;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';
-            options.groupId = options.groupId ?? 'asteroid-group-tag';
+            options.groupId = `group-tag-${options.id}`;
             options.initialX = options.initialX ?? 0;
             options.initialY = options.initialY ?? 0;
             options.x = options.x ?? Math.random() * gameNode.clientWidth;
@@ -141,7 +142,16 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'asteroidGroupTag':
             options.class = 'asteroid-group-tag';
-            // options.display = globalOptions.guide ? 'inline' : 'none';
+            break;
+        case 'asteroidGuide':
+            options.fill = 'rgba(0, 0, 0, .4)';
+            options.cx = 0;
+            options.cy = 0;
+            options.r = options.radius;
+            break;
+        case 'asteroidGuideGroupTag':
+            options.id = `asteroid-guide-group-tag-${globalOptions.id}`;
+            options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'projectile':
             options.class = 'projectile';
