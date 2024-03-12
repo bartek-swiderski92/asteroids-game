@@ -221,5 +221,54 @@ $svg.drawShip = function (gameNode, options = {}) {
     shipGroupTag.appendChild(guideGroupTag);
     gameNode.appendChild(shipGroupTag);
 };
+$svgPrivate.buildAsteroidDAttribute = function (options) {
+    const {segments, noise, radius} = options;
+    let coordinates = 'M';
+    for (let i = 0; i < segments; i++) {
+        const randomX = (Math.random() / 1.3) * noise;
+        const randomY = (Math.random() / 1.3) * noise;
+        const angle = (i / segments) * 2 * Math.PI;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const x = radius * cos - radius * cos * randomX;
+        const y = radius * sin - radius * sin * randomY;
+        coordinates += `${x}, ${y} `;
+    }
+    coordinates += 'Z';
+    return coordinates;
+};
+$svgPrivate.crateAsteroidsElement = function (options) {
+    options.d = $svgPrivate.buildAsteroidDAttribute(options);
+    const pathElement = $svgPrivate.setBasicAttributes('path', options);
+
+    return pathElement;
+};
+$svg.drawAsteroid = function (gameNode, options = {}) {
+    const asteroidGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: options.groupId}, gameNode, options);
+    const asteroidGroupTag = $svgPrivate.setBasicAttributes('g', asteroidGroupTagOptions);
+    const asteroidsElement = $svgPrivate.crateAsteroidsElement(options);
+
+    //Setting up guide
+    let guideCircleOptions = structuredClone(options);
+    guideCircleOptions = $helpers.assignDefaultValues('asteroidGuide', guideCircleOptions, gameNode, options);
+    const guideCircle = $svgPrivate.drawCircle(guideCircleOptions);
+    const guideGroupTag = $helpers.assignDefaultValues('asteroidGuideGroupTag', {}, gameNode, options);
+    const asteroidGuideGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTag);
+    asteroidGuideGroupTag.appendChild(guideCircle);
+    asteroidGroupTag.appendChild(asteroidGuideGroupTag);
+
+    asteroidGroupTag.appendChild(asteroidsElement);
+    gameNode.appendChild(asteroidGroupTag);
+};
+
+$svg.drawProjectile = function (gameNode, projectileInstance) {
+    let projectileClone = structuredClone(projectileInstance);
+    projectileClone.cx = projectileInstance.x;
+    projectileClone.cy = projectileInstance.y;
+    projectileClone.r = projectileInstance.radius;
+
+    let circle = $svgPrivate.drawCircle(projectileClone);
+    gameNode.appendChild(circle);
+};
 
 export default $svg;

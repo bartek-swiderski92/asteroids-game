@@ -21,6 +21,12 @@ export class Game {
 export class Mass {
     constructor(options) {
         options = $helpers.assignDefaultValues('massClass', options);
+        //Appearance
+        this.lineWidth = options.lineWidth;
+        this.stroke = options.stroke;
+        this.fill = options.fill;
+        this.guide = options.guide;
+
         this.x = options.x;
         this.y = options.y;
         this.mass = options.mass;
@@ -29,6 +35,7 @@ export class Mass {
         this.xSpeed = options.xSpeed;
         this.ySpeed = options.ySpeed;
         this.rotationSpeed = options.rotationSpeed;
+        this.rotateValue = options.rotateValue;
     }
 
     update(elapsed) {
@@ -85,15 +92,10 @@ export class Ship extends Mass {
         this.initialY = options.initialY;
 
         //Appearance
-        this.lineWidth = options.lineWidth;
-        this.stroke = options.stroke;
-        this.fill = options.fill;
         this.curve1 = options.curve1;
         this.curve2 = options.curve2;
-        this.guide = options.guide;
 
         //State
-        this.rotateValue = options.rotateValue;
         this.thrusterPower = options.thrusterPower;
         this.steeringPower = options.thrusterPower / 20;
         this.thrusterOn = false;
@@ -104,6 +106,11 @@ export class Ship extends Mass {
     draw(asteroids) {
         $svg.drawShip(asteroids, this);
     }
+
+    init() {
+        this.animateElement();
+    }
+
     switchThruster() {
         const targetElement = document.querySelector(`#ship-flame`);
         targetElement.style.display = this.thrusterOn ? 'inline' : 'none';
@@ -115,13 +122,62 @@ export class Ship extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
+    switchGuide() {
+        const targetElement = document.querySelector(`#ship-guide`);
+        this.guide = !this.guide;
+        targetElement.style.display = this.guide ? 'inline' : 'none';
+    }
+}
+
+export class Asteroid extends Mass {
+    constructor(id, options = {}) {
+        options.id = id;
+        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
+        super(options);
+        this.id = id;
+        this.groupId = options.groupId;
+        this.class = options.class;
+        this.circumference = 2 * Math.PI * this.radius;
+        this.segments = Math.min(25, Math.max(5, Math.ceil(this.circumference / 15)));
+        this.noise = options.noise;
+        this.shape = [];
+        for (let i = 0; i < this.segments; i++) {
+            this.shape.push(2 * Math.random() - 0.5);
+        }
+    }
+
+    draw(gameNode) {
+        $svg.drawAsteroid(gameNode, this);
+    }
+
     init() {
         this.animateElement();
     }
 
     switchGuide() {
-        const targetElement = document.querySelector(`#guide`);
+        const targetElement = document.querySelector(`#asteroid-guide-group-tag-${this.id}`);
         this.guide = !this.guide;
         targetElement.style.display = this.guide ? 'inline' : 'none';
+    }
+}
+
+export class Projectile extends Mass {
+    constructor(x, y, options = {}) {
+        options = $helpers.assignDefaultValues('projectile', options, gameNode);
+        super(options);
+
+        this.x = x;
+        this.y = y;
+        this.lifetime = options.lifetime;
+        this.life = options.life;
+    }
+
+    draw(gameNode) {
+        $svg.drawProjectile(gameNode, this);
+    }
+
+    update(elapsed, c) {
+        this.life -= elapsed / this.lifetime;
+        Mass.prototype.update.apply(this, arguments);
     }
 }

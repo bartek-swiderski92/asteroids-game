@@ -2,7 +2,7 @@
 
 const $helpers = {};
 
-$helpers.handleKeyPress = function (event, value, game, ship) {
+$helpers.handleKeyPress = function (event, value, game, ship, asteroids) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
@@ -22,6 +22,7 @@ $helpers.handleKeyPress = function (event, value, game, ship) {
             if (value) {
                 game.switchGrid();
                 ship.switchGuide();
+                asteroids.forEach((asteroid) => asteroid.switchGuide());
             }
             break;
         default:
@@ -63,7 +64,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'guideGroupTag':
-            options.id = 'guide';
+            options.id = 'ship-guide';
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'shipGuide':
@@ -87,18 +88,18 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.xSpeed = options.xSpeed ?? 0;
             options.ySpeed = options.ySpeed ?? 0;
             options.rotationSpeed = options.rotationSpeed ?? 0;
+            options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
             break;
         case 'shipClass':
             options.id = options.id ?? 'ship';
             options.groupId = options.groupId ?? 'ship-group-tag';
-            options.initialX = options.initialX ?? 0;
-            options.initialY = options.initialY ?? 0;
+            options.initialX = 0;
+            options.initialY = 0;
             options.x = options.x ?? gameNode.clientWidth / 2;
             options.y = options.y ?? gameNode.clientHeight / 2;
             options.mass = options.mass ?? 10;
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.rotateValue = options.rotateValue ?? -(0.5 * Math.PI);
             options.thrusterPower = options.thrusterPower ?? 1000;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
@@ -122,6 +123,46 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.posX = globalOptions.initialX + (Math.cos(Math.PI - globalOptions.angle * 0.4) * globalOptions.radius) / 2;
             options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
             options.display = 'none';
+            break;
+        case 'asteroidClass':
+            options.class = 'asteroid';
+            options.lineWidth = options.lineWidth ?? 1.75;
+            options.stroke = options.stroke ?? 'white';
+            options.fill = options.fill ?? 'black';
+            options.groupId = `group-tag-${options.id}`;
+            options.initialX = options.initialX ?? 0;
+            options.initialY = options.initialY ?? 0;
+            options.x = options.x ?? Math.random() * gameNode.clientWidth;
+            options.y = options.y ?? Math.random() * gameNode.clientHeight;
+            options.density = options.density ?? 1;
+            options.mass = options.mass ?? 2000 + Math.random() * 8000;
+            options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
+            options.noise = options.noise ?? 0.5; // 0.75
+            options.guide = options.guide ?? false;
+            break;
+        case 'asteroidGroupTag':
+            options.class = 'asteroid-group-tag';
+            break;
+        case 'asteroidGuide':
+            options.fill = 'rgba(0, 0, 0, .4)';
+            options.cx = 0;
+            options.cy = 0;
+            options.r = options.radius;
+            break;
+        case 'asteroidGuideGroupTag':
+            options.id = `asteroid-guide-group-tag-${globalOptions.id}`;
+            options.display = globalOptions.guide ? 'inline' : 'none';
+            break;
+        case 'projectile':
+            options.class = 'projectile';
+            options.lineWidth = options.lineWidth ?? 3;
+            options.stroke = options.stroke ?? 'yellow';
+            options.fill = options.fill ?? 'red';
+            options.density = options.density ?? 0.001;
+            options.mass = options.mass ?? 0.1;
+            options.radius = Math.sqrt(options.mass / options.density / Math.PI);
+            options.lifetime = options.lifetime ?? 0.001;
+            options.life = options.life ?? 1.0;
             break;
     }
     return options;
