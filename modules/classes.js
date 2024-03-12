@@ -21,6 +21,12 @@ export class Game {
 export class Mass {
     constructor(options) {
         options = $helpers.assignDefaultValues('massClass', options);
+        //Appearance
+        this.lineWidth = options.lineWidth;
+        this.stroke = options.stroke;
+        this.fill = options.fill;
+        this.guide = options.guide;
+
         this.x = options.x;
         this.y = options.y;
         this.mass = options.mass;
@@ -85,12 +91,8 @@ export class Ship extends Mass {
         this.initialY = options.initialY;
 
         //Appearance
-        this.lineWidth = options.lineWidth;
-        this.stroke = options.stroke;
-        this.fill = options.fill;
         this.curve1 = options.curve1;
         this.curve2 = options.curve2;
-        this.guide = options.guide;
 
         //State
         this.rotateValue = options.rotateValue;
@@ -126,22 +128,32 @@ export class Ship extends Mass {
     }
 }
 
+export class Asteroid extends Mass {
+    constructor(id, options = {}) {
+        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
+        super(options);
+        this.id = id;
+        this.circumference = 2 * Math.PI * this.radius;
+        this.segments = Math.min(25, Math.max(5, Math.ceil(this.circumference / 15)));
+        this.noise = options.noise;
+        this.shape = [];
+        for (let i = 0; i < this.segments; i++) {
+            this.shape.push(2 * Math.random() - 0.5);
+        }
+    }
+
+    draw(gameNode) {
+        $svg.drawAsteroid(gameNode, this);
+    }
+}
+
 export class Projectile extends Mass {
     constructor(x, y, options = {}) {
         options = $helpers.assignDefaultValues('projectile', options, gameNode);
         super(options);
 
-        //Appearance
-        this.lineWidth = options.lineWidth;
-        this.stroke = options.stroke;
-        this.fill = options.fill;
-        this.guide = options.guide;
-
         this.x = x;
         this.y = y;
-        this.density = options.density;
-        this.mass = options.mass;
-        this.radius = options.radius ?? Math.sqrt(this.mass / this.density / Math.PI);
         this.lifetime = options.lifetime;
         this.life = options.life;
     }

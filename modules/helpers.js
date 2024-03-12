@@ -91,8 +91,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'shipClass':
             options.id = options.id ?? 'ship';
             options.groupId = options.groupId ?? 'ship-group-tag';
-            options.initialX = options.initialX ?? 0;
-            options.initialY = options.initialY ?? 0;
+            options.initialX = 0;
+            options.initialY = 0;
             options.x = options.x ?? gameNode.clientWidth / 2;
             options.y = options.y ?? gameNode.clientHeight / 2;
             options.mass = options.mass ?? 10;
@@ -122,6 +122,26 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.posX = globalOptions.initialX + (Math.cos(Math.PI - globalOptions.angle * 0.4) * globalOptions.radius) / 2;
             options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
             options.display = 'none';
+            break;
+        case 'asteroidClass':
+            options.class = 'asteroid';
+            options.lineWidth = options.lineWidth ?? 1.75;
+            options.stroke = options.stroke ?? 'white';
+            options.fill = options.fill ?? 'black';
+            options.groupId = options.groupId ?? 'asteroid-group-tag';
+            options.initialX = options.initialX ?? 0;
+            options.initialY = options.initialY ?? 0;
+            options.x = options.x ?? Math.random() * gameNode.clientWidth;
+            options.y = options.y ?? Math.random() * gameNode.clientHeight;
+            options.density = options.density ?? 1;
+            options.mass = options.mass ?? 2000 + Math.random() * 8000;
+            options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
+            options.noise = options.noise ?? 0.5; // 0.75
+            options.guide = options.guide ?? false;
+            break;
+        case 'asteroidGroupTag':
+            options.class = 'asteroid-group-tag';
+            // options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'projectile':
             options.class = 'projectile';
