@@ -6,16 +6,20 @@ $helpers.handleKeyPress = function (event, value, game, ship, asteroids) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
-        case '38':
+        case 38:
             ship.thrusterOn = value;
             break;
         case 'ArrowLeft':
-        case '37':
+        case 37:
             ship.leftThrusterOn = value;
             break;
         case 'ArrowRight':
-        case '39':
+        case 39:
             ship.rightThrusterOn = value;
+            break;
+        case ' ':
+        case 32:
+            ship.trigger = value;
             break;
         case 'g':
         case '71':
@@ -100,6 +104,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.mass = options.mass ?? 10;
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
+            options.weaponPower = options.weaponPower ?? 450;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
@@ -159,9 +165,9 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.stroke = options.stroke ?? 'yellow';
             options.fill = options.fill ?? 'red';
             options.density = options.density ?? 0.001;
-            options.mass = options.mass ?? 0.1;
+            options.mass = options.mass ?? 0.025;
             options.radius = Math.sqrt(options.mass / options.density / Math.PI);
-            options.lifetime = options.lifetime ?? 0.001;
+            options.lifetime = options.lifetime ?? 6;
             options.life = options.life ?? 1.0;
             break;
     }

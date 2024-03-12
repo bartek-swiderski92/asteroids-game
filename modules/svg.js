@@ -263,8 +263,8 @@ $svg.drawAsteroid = function (gameNode, options = {}) {
 
 $svg.drawProjectile = function (gameNode, projectileInstance) {
     let projectileClone = structuredClone(projectileInstance);
-    projectileClone.cx = projectileInstance.x;
-    projectileClone.cy = projectileInstance.y;
+    projectileClone.cx = 0;
+    projectileClone.cy = 0;
     projectileClone.r = projectileInstance.radius;
 
     let circle = $svgPrivate.drawCircle(projectileClone);

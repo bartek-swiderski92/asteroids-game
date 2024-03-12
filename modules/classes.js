@@ -77,7 +77,7 @@ export class Mass {
     }
 
     animateElement() {
-        const targetElement = document.querySelector(`#${this.groupId}`);
+        const targetElement = document.querySelector(`#${this.groupId || this.id}`);
         targetElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
     }
 }
@@ -96,6 +96,10 @@ export class Ship extends Mass {
         this.curve2 = options.curve2;
 
         //State
+        this.loaded = false;
+        this.weaponPower = options.weaponPower;
+        this.weaponReloadTime = options.weaponReloadTime;
+        this.timeUntilReloaded = this.weaponReloadTime;
         this.thrusterPower = options.thrusterPower;
         this.steeringPower = options.thrusterPower / 20;
         this.thrusterOn = false;
@@ -116,10 +120,23 @@ export class Ship extends Mass {
         targetElement.style.display = this.thrusterOn ? 'inline' : 'none';
     }
     update(elapsed) {
+        this.loaded = this.timeUntilReloaded === 0;
+        if (!this.loaded) {
+            this.timeUntilReloaded -= Math.min(elapsed, this.timeUntilReloaded);
+        }
         this.switchThruster();
         this.push(this.rotateValue, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         Mass.prototype.update.apply(this, arguments);
+    }
+
+    projectile(gameNode, projectileCount, elapsed) {
+        let projectile = new Projectile(this.x, this.y, projectileCount);
+        projectile.push(this.rotateValue, this.weaponPower, elapsed);
+        projectile.draw(gameNode);
+        this.loaded = false;
+        this.timeUntilReloaded = this.weaponReloadTime;
+        return projectile;
     }
 
     switchGuide() {
@@ -162,10 +179,10 @@ export class Asteroid extends Mass {
 }
 
 export class Projectile extends Mass {
-    constructor(x, y, options = {}) {
+    constructor(x, y, projectileCount, options = {}) {
         options = $helpers.assignDefaultValues('projectile', options, gameNode);
         super(options);
-
+        this.id = `projectile-${projectileCount}`;
         this.x = x;
         this.y = y;
         this.lifetime = options.lifetime;
@@ -179,5 +196,10 @@ export class Projectile extends Mass {
     update(elapsed, c) {
         this.life -= elapsed / this.lifetime;
         Mass.prototype.update.apply(this, arguments);
+    }
+
+    destroy(gameNode) {
+        let projectileNode = gameNode.querySelector(`#${this.id}`);
+        projectileNode.remove();
     }
 }
