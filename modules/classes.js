@@ -180,7 +180,6 @@ export class Asteroid extends Mass {
 
 export class Projectile extends Mass {
     constructor(ship, projectileCount, options = {}) {
-        console.log(ship);
         options = $helpers.assignDefaultValues('projectile', options, gameNode);
         super(options);
         this.id = `projectile-${projectileCount}`;
@@ -190,7 +189,6 @@ export class Projectile extends Mass {
         this.life = options.life;
         this.xSpeed = ship.xSpeed;
         this.ySpeed = ship.ySpeed;
-        console.log(Math.cos(ship.rotateValue) * ship.radius * ship.x + ship.x);
     }
 
     draw(gameNode) {
