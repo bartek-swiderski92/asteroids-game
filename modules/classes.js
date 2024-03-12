@@ -188,6 +188,8 @@ export class Projectile extends Mass {
         this.y = ship.y + Math.sin(Math.PI - ship.rotateValue) * ship.radius;
         this.lifetime = options.lifetime;
         this.life = options.life;
+        this.xSpeed = ship.xSpeed;
+        this.ySpeed = ship.ySpeed;
         console.log(Math.cos(ship.rotateValue) * ship.radius * ship.x + ship.x);
     }
 
