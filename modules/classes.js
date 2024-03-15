@@ -11,7 +11,10 @@ export class Game {
         this.projectileCount = 0;
         this.projectiles = [];
         this.asteroids = [];
-        this.asteroids.push(this.movingAsteroid());
+        this.asteroidStartCount = options.asteroidStartCount ?? 4;
+        for (let i = 0; i < this.asteroidStartCount; i++) {
+            this.asteroids.push(this.movingAsteroid(i));
+        }
         window.requestAnimationFrame(this.frame.bind(this));
     }
 
@@ -21,10 +24,19 @@ export class Game {
 
     switchGuide() {
         const targetElement = document.querySelector(`#grid`);
+        const collisionLines = [...document.querySelectorAll('.collision-line')];
         this.guide = !this.guide;
         targetElement.style.display = this.guide ? 'inline' : 'none';
         this.ship.switchGuide();
         this.asteroids.forEach((asteroid) => asteroid.switchGuide());
+        collisionLines.forEach((line) => line.remove());
+    }
+
+    drawCollisionLine(obj1, obj2) {
+        const lineId = `${obj1.id}-${obj2.id}`;
+        const lineElement = document.getElementById(lineId);
+        let lineOptions = $helpers.assignDefaultValues('collisionLine', {id: lineId});
+        $svg.drawCollisionLine(gameNode, lineElement, obj1, obj2, lineOptions);
     }
 
     pushAsteroid(asteroid, elapsed) {
@@ -33,8 +45,8 @@ export class Game {
         asteroid.twist(Math.random() * 0.5 * Math.PI * asteroid.pushForce * 0.02, elapsed);
     }
 
-    movingAsteroid(elapsed) {
-        let asteroid = new Asteroid('asteroid-1', {guide: this.guide});
+    movingAsteroid(index, elapsed) {
+        let asteroid = new Asteroid(`asteroid-${index}`, {guide: this.guide});
         this.pushAsteroid(asteroid, elapsed);
         return asteroid;
     }
@@ -50,6 +62,9 @@ export class Game {
     update(elapsed) {
         this.ship.compromised = false;
         this.asteroids.forEach((asteroid) => {
+            if (this.guide) {
+                this.drawCollisionLine(asteroid, this.ship);
+            }
             asteroid.update(elapsed);
         }, this);
         this.ship.update(elapsed);

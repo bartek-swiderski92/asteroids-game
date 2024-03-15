@@ -173,6 +173,11 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.lifetime = options.lifetime ?? 6;
             options.life = options.life ?? 1.0;
             break;
+        case 'collisionLine':
+            options.class = 'collision-line';
+            options.lineWidth = options.lineWidth ?? 0.5;
+            options.stroke = options.stroke ?? 'white';
+            break;
     }
     return options;
 };

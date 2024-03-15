@@ -11,6 +11,17 @@ $svgPrivate.drawCircle = function (options = {}) {
     return circle;
 };
 
+$svg.drawCollisionLine = function (gameNode, lineElement, obj1, obj2, options = {}) {
+    if (lineElement == undefined) {
+        const lineElement = $svgPrivate.setBasicAttributes('line', options);
+        gameNode.appendChild(lineElement);
+    } else {
+        lineElement.setAttribute('x1', obj1.x);
+        lineElement.setAttribute('x2', obj2.x);
+        lineElement.setAttribute('y1', obj1.y);
+        lineElement.setAttribute('y2', obj2.y);
+    }
+};
 $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
     options = $helpers.assignDefaultValues('grid', options, gameNode, gameInstance);
     const {minor, major, lineColor, textColor} = options;
