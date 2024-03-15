@@ -6,16 +6,64 @@ const gameNode = document.querySelector('#game');
 export class Game {
     constructor(options) {
         this.guide = options.guide;
+        this.drawGrid();
+        this.ship = new Ship({guide: this.guide});
+        this.projectileCount = 0;
+        this.projectiles = [];
+        this.asteroids = [];
+        this.asteroids.push(this.movingAsteroid());
+        window.requestAnimationFrame(this.frame.bind(this));
     }
 
     drawGrid() {
         $svg.drawGrid(gameNode, this);
     }
 
-    switchGrid() {
+    switchGuide() {
         const targetElement = document.querySelector(`#grid`);
         this.guide = !this.guide;
         targetElement.style.display = this.guide ? 'inline' : 'none';
+        this.ship.switchGuide();
+        this.asteroids.forEach((asteroid) => asteroid.switchGuide());
+    }
+
+    pushAsteroid(asteroid, elapsed) {
+        elapsed = elapsed || 0.015;
+        asteroid.push(2 * Math.PI * Math.random(), asteroid.pushForce, elapsed);
+        asteroid.twist(Math.random() * 0.5 * Math.PI * asteroid.pushForce * 0.02, elapsed);
+    }
+
+    movingAsteroid(elapsed) {
+        let asteroid = new Asteroid('asteroid-1', {guide: this.guide});
+        this.pushAsteroid(asteroid, elapsed);
+        return asteroid;
+    }
+
+    frame(timestamp) {
+        if (!this.previous) this.previous = timestamp;
+        let elapsed = timestamp - this.previous;
+        this.update(elapsed / 1000);
+        this.previous = timestamp;
+        window.requestAnimationFrame(this.frame.bind(this));
+    }
+
+    update(elapsed) {
+        this.ship.compromised = false;
+        this.asteroids.forEach((asteroid) => {
+            asteroid.update(elapsed);
+        }, this);
+        this.ship.update(elapsed);
+        this.projectiles.forEach((projectile, index, projectiles) => {
+            projectile.update(elapsed);
+            if (projectile.life <= 0) {
+                projectile.destroy();
+                projectiles.splice(index, 1);
+            }
+        }, this);
+        if (this.ship.trigger && this.ship.loaded) {
+            this.projectileCount++;
+            this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
+        }
     }
 }
 export class Mass {
@@ -85,7 +133,6 @@ export class Ship extends Mass {
     constructor(options = {}) {
         options = $helpers.assignDefaultValues('shipClass', options, gameNode);
         super(options);
-
         this.id = options.id;
         this.groupId = options.groupId;
         this.initialX = options.initialX;
@@ -105,13 +152,12 @@ export class Ship extends Mass {
         this.thrusterOn = false;
         this.rightThrusterOn = false;
         this.leftThrusterOn = false;
-    }
 
-    draw(asteroids) {
-        $svg.drawShip(asteroids, this);
+        this.init();
     }
 
     init() {
+        $svg.drawShip(gameNode, this);
         this.animateElement();
     }
 
@@ -130,10 +176,10 @@ export class Ship extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    projectile(gameNode, projectileCount, elapsed) {
+    projectile(projectileCount, elapsed) {
         let projectile = new Projectile(this, projectileCount);
         projectile.push(this.rotateValue, this.weaponPower, elapsed);
-        projectile.draw(gameNode);
+        projectile.draw();
         this.loaded = false;
         this.timeUntilReloaded = this.weaponReloadTime;
         return projectile;
@@ -158,16 +204,19 @@ export class Asteroid extends Mass {
         this.segments = Math.min(25, Math.max(5, Math.ceil(this.circumference / 15)));
         this.noise = options.noise;
         this.shape = [];
+        this.pushForce = options.pushForce;
         for (let i = 0; i < this.segments; i++) {
             this.shape.push(2 * Math.random() - 0.5);
         }
+        this.init();
     }
 
-    draw(gameNode) {
+    draw() {
         $svg.drawAsteroid(gameNode, this);
     }
 
     init() {
+        this.draw();
         this.animateElement();
     }
 
@@ -191,7 +240,7 @@ export class Projectile extends Mass {
         this.ySpeed = ship.ySpeed;
     }
 
-    draw(gameNode) {
+    draw() {
         $svg.drawProjectile(gameNode, this);
     }
 
@@ -200,7 +249,7 @@ export class Projectile extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    destroy(gameNode) {
+    destroy() {
         let projectileNode = gameNode.querySelector(`#${this.id}`);
         projectileNode.remove();
     }

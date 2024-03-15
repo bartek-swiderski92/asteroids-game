@@ -2,31 +2,33 @@
 
 const $helpers = {};
 
-$helpers.handleKeyPress = function (event, value, game, ship, asteroids) {
+$helpers.handleKeyPress = function (event, value, game) {
     let nothingHandled;
     switch (event.key || event.keyCode) {
         case 'ArrowUp':
         case 38:
-            ship.thrusterOn = value;
+            game.ship.thrusterOn = value;
             break;
         case 'ArrowLeft':
         case 37:
-            ship.leftThrusterOn = value;
+            game.ship.leftThrusterOn = value;
             break;
         case 'ArrowRight':
         case 39:
-            ship.rightThrusterOn = value;
+            game.ship.rightThrusterOn = value;
+            break;
+        case 'ArrowDown':
+        case 40:
+            game.ship.retroOn = value;
             break;
         case ' ':
         case 32:
-            ship.trigger = value;
+            game.ship.trigger = value;
             break;
         case 'g':
         case '71':
             if (value) {
-                game.switchGrid();
-                ship.switchGuide();
-                asteroids.forEach((asteroid) => asteroid.switchGuide());
+                game.switchGuide();
             }
             break;
         default:
@@ -141,7 +143,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = options.x ?? Math.random() * gameNode.clientWidth;
             options.y = options.y ?? Math.random() * gameNode.clientHeight;
             options.density = options.density ?? 1;
-            options.mass = options.mass ?? 2000 + Math.random() * 8000;
+            options.mass = options.mass ?? 5000;
+            options.pushForce = options.pushForce ?? 8000000;
             options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
             options.noise = options.noise ?? 0.5; // 0.75
             options.guide = options.guide ?? false;
