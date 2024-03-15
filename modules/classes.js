@@ -7,7 +7,7 @@ export class Game {
     constructor(options) {
         this.guide = options.guide;
         this.drawGrid();
-        this.ship = new Ship({guide: this.guide, flameOptions: {fill: 'yellow', stroke: 'green'}});
+        this.ship = new Ship({guide: this.guide});
         this.projectileCount = 0;
         this.projectiles = [];
         this.asteroids = [];
@@ -112,7 +112,7 @@ export class Mass {
         this.ySpeed = options.ySpeed;
         this.rotationSpeed = options.rotationSpeed;
         this.rotateValue = options.rotateValue;
-        this.flameOptions = options.flameOptions;
+        this.shipFlameOptions = options.shipFlameOptions;
 
         this.massElement = null;
     }
@@ -191,10 +191,10 @@ export class Ship extends Mass {
 
         $svg.drawShip(gameNode, this);
         this.animateElement();
-        this.groupTagElement = document.getElementById(this.groupTagOptions.id);
-        this.guideGroupTagElement = document.getElementById(this.guideGroupTagOptions.id);
+        this.groupTagElement = document.getElementById(this.shipGroupOptions.id);
+        this.guideGroupTagElement = document.getElementById(this.shipGuideGroupOptions.id);
         this.guideCircleElement = this.guideGroupTagElement.querySelector('circle');
-        this.flameElement = document.querySelector(`#ship-flame`);
+        this.flameElement = document.getElementById(this.shipFlameOptions.id);
     }
 
     switchThruster() {
@@ -208,9 +208,9 @@ export class Ship extends Mass {
         }
         if (this.guide) {
             if (this.isCompromised) {
-                this.guideCircleElement.setAttribute('stroke', 'red');
+                this.guideCircleElement.setAttribute('stroke', this.shipGuideOptions.collisionStroke);
             } else {
-                this.guideCircleElement.setAttribute('stroke', 'white');
+                this.guideCircleElement.setAttribute('stroke', this.shipGuideOptions.stroke);
             }
         }
         this.switchThruster();
@@ -220,7 +220,7 @@ export class Ship extends Mass {
     }
 
     projectile(projectileCount, elapsed) {
-        let projectile = new Projectile(this, projectileCount);
+        let projectile = new Projectile(`projectile-${projectileCount}`, this);
         projectile.push(this.rotateValue, this.weaponPower, elapsed);
         projectile.draw();
         this.loaded = false;
@@ -253,7 +253,8 @@ export class Asteroid extends Mass {
         }
         this.draw();
         this.animateElement();
-        this.guideElement = document.getElementById(`guide-${this.id}`);
+        console.log(this);
+        this.guideElement = document.getElementById(this.guideOptions.id);
         this.guideCircleElement = this.guideElement.querySelector('circle');
     }
 
@@ -264,7 +265,7 @@ export class Asteroid extends Mass {
     update(elapsed) {
         if (this.guide) {
             if (this.isColliding) {
-                this.guideCircleElement.setAttribute('stroke', this.guideOptions.collidingColor);
+                this.guideCircleElement.setAttribute('stroke', this.guideOptions.collisionStroke);
             } else {
                 this.guideCircleElement.setAttribute('stroke', this.guideOptions.stroke);
             }
@@ -279,10 +280,10 @@ export class Asteroid extends Mass {
 }
 
 export class Projectile extends Mass {
-    constructor(ship, projectileCount, options = {}) {
-        options = $helpers.assignDefaultValues('projectile', options, gameNode);
+    constructor(id, ship, options = {}) {
+        options = $helpers.assignDefaultValues('projectileClass', options, gameNode);
         super(options);
-        this.id = `projectile-${projectileCount}`;
+        this.id = id;
         this.x = ship.x - Math.cos(Math.PI - ship.rotateValue) * ship.radius;
         this.y = ship.y + Math.sin(Math.PI - ship.rotateValue) * ship.radius;
         this.lifetime = options.lifetime;
@@ -295,13 +296,12 @@ export class Projectile extends Mass {
         $svg.drawProjectile(gameNode, this);
     }
 
-    update(elapsed, c) {
+    update(elapsed) {
         this.life -= elapsed / this.lifetime;
         Mass.prototype.update.apply(this, arguments);
     }
 
     destroy() {
-        let projectileNode = gameNode.querySelector(`#${this.id}`);
-        projectileNode.remove();
+        gameNode.getElementById(this.id).remove();
     }
 }

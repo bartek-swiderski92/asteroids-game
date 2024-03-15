@@ -69,24 +69,6 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.textColor = options.textColor ?? '#009900';
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
-        case 'guideGroupTag':
-            options.id = 'ship-guide-group-tag';
-            options.display = globalOptions.guide ? 'inline' : 'none';
-            break;
-        case 'shipGuide':
-            options.id = 'ship-guide-circle';
-            options.cx = globalOptions.initialX;
-            options.cy = globalOptions.initialY;
-            options.r = options.r ?? globalOptions.radius;
-            options.stroke = options.stroke ?? 'white';
-            options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
-            break;
-        case 'guideWaypoints':
-            options.fill = 'white';
-            options.stroke = 'rgba(255,255,255, 0.5';
-            options.strokeWidth = '1px';
-            options.d = '';
-            break;
         case 'massClass':
             options.mass = options.mass ?? 1;
             options.radius = options.radius ?? 50;
@@ -111,7 +93,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.thrusterPower = options.thrusterPower ?? 1000;
             options.maxHealth = 2.0;
             //Appearance
-            options.flameOptions = options.flameOptions ?? {};
+            options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';
@@ -119,10 +101,10 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.curve2 = options.curve2 ?? 0.75;
             options.guide = options.guide ?? false;
             break;
-        case 'groupTagSVG':
+        case 'shipGroupOptions':
             options.id = globalOptions.groupId;
             break;
-        case 'shipFlame':
+        case 'shipFlameOptions':
             options.id = 'ship-flame';
             options.lineWidth = options.lineWidth ?? 3;
             options.stroke = options.stroke ?? 'yellow';
@@ -134,6 +116,25 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.posX = globalOptions.initialX + (Math.cos(Math.PI - globalOptions.angle * 0.4) * globalOptions.radius) / 2;
             options.posY = globalOptions.initialY - (Math.sin(Math.PI - globalOptions.angle * 0.8) * globalOptions.radius) / 2;
             options.display = 'none';
+            break;
+        case 'shipGuideGroupOptions':
+            options.id = 'ship-guide-group-tag';
+            options.display = globalOptions.guide ? 'inline' : 'none';
+            break;
+        case 'shipGuideOptions':
+            options.id = 'ship-guide-circle';
+            options.cx = globalOptions.initialX;
+            options.cy = globalOptions.initialY;
+            options.r = options.r ?? globalOptions.radius;
+            options.stroke = options.stroke ?? 'white';
+            options.collisionStroke = options.collisionStroke ?? 'red';
+            options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
+            break;
+        case 'guideWaypoints':
+            options.fill = 'white';
+            options.stroke = 'rgba(255,255,255, 0.5';
+            options.strokeWidth = '1px';
+            options.d = '';
             break;
         case 'asteroidClass':
             options.class = 'asteroid';
@@ -156,9 +157,10 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.class = 'asteroid-group-tag';
             break;
         case 'asteroidGuide':
+            options.id = `guide-${globalOptions.id}`;
             options.class = 'asteroid-guide';
             options.stroke = options.stroke ?? 'white';
-            options.collidingColor = options.collidingColor ?? 'red';
+            options.collisionStroke = options.collisionStroke ?? 'red';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
             options.cx = 0;
             options.cy = 0;
@@ -168,7 +170,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.id = `guide-${globalOptions.id}`;
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
-        case 'projectile':
+        case 'projectileClass':
             options.class = 'projectile';
             options.lineWidth = options.lineWidth ?? 3;
             options.stroke = options.stroke ?? 'yellow';
