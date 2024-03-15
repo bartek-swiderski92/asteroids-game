@@ -70,11 +70,11 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'guideGroupTag':
-            options.id = 'ship-guide';
+            options.id = 'ship-guide-group-tag';
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'shipGuide':
-            options.id = 'ship-guide';
+            options.id = 'ship-guide-circle';
             options.cx = globalOptions.initialX;
             options.cy = globalOptions.initialY;
             options.r = options.r ?? globalOptions.radius;
@@ -98,7 +98,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'shipClass':
             options.id = options.id ?? 'ship';
-            options.groupId = options.groupId ?? 'ship-group-tag';
+            options.groupId = `group-${options.id}`;
             options.initialX = 0;
             options.initialY = 0;
             options.x = options.x ?? gameNode.clientWidth / 2;
@@ -109,6 +109,9 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.weaponPower = options.weaponPower ?? 450;
             options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
+            options.maxHealth = 2.0;
+            //Appearance
+            options.flameOptions = options.flameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
             options.fill = options.fill ?? 'black';
@@ -117,7 +120,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.guide = options.guide ?? false;
             break;
         case 'groupTagSVG':
-            options.id = 'ship-group-tag';
+            options.id = globalOptions.groupId;
             break;
         case 'shipFlame':
             options.id = 'ship-flame';
@@ -153,13 +156,16 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.class = 'asteroid-group-tag';
             break;
         case 'asteroidGuide':
-            options.fill = 'rgba(0, 0, 0, .4)';
+            options.class = 'asteroid-guide';
+            options.stroke = options.stroke ?? 'white';
+            options.collidingColor = options.collidingColor ?? 'red';
+            options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
             options.cx = 0;
             options.cy = 0;
-            options.r = options.radius;
+            options.r = globalOptions.radius;
             break;
         case 'asteroidGuideGroupTag':
-            options.id = `asteroid-guide-group-tag-${globalOptions.id}`;
+            options.id = `guide-${globalOptions.id}`;
             options.display = globalOptions.guide ? 'inline' : 'none';
             break;
         case 'projectile':

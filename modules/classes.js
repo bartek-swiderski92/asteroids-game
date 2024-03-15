@@ -7,7 +7,7 @@ export class Game {
     constructor(options) {
         this.guide = options.guide;
         this.drawGrid();
-        this.ship = new Ship({guide: this.guide});
+        this.ship = new Ship({guide: this.guide, flameOptions: {fill: 'yellow', stroke: 'green'}});
         this.projectileCount = 0;
         this.projectiles = [];
         this.asteroids = [];
@@ -16,6 +16,7 @@ export class Game {
             this.asteroids.push(this.movingAsteroid(i));
         }
         window.requestAnimationFrame(this.frame.bind(this));
+        this.gridElement = document.getElementById('grid');
     }
 
     drawGrid() {
@@ -23,10 +24,9 @@ export class Game {
     }
 
     switchGuide() {
-        const targetElement = document.querySelector(`#grid`);
         const collisionLines = [...document.querySelectorAll('.collision-line')];
         this.guide = !this.guide;
-        targetElement.style.display = this.guide ? 'inline' : 'none';
+        this.gridElement.setAttribute('display', this.guide ? 'inline' : 'none');
         this.ship.switchGuide();
         this.asteroids.forEach((asteroid) => asteroid.switchGuide());
         collisionLines.forEach((line) => line.remove());
@@ -60,10 +60,15 @@ export class Game {
     }
 
     update(elapsed) {
-        this.ship.compromised = false;
+        this.ship.isCompromised = false;
         this.asteroids.forEach((asteroid) => {
             if (this.guide) {
                 this.drawCollisionLine(asteroid, this.ship);
+            }
+            asteroid.isColliding = false;
+            if (this.areColliding(asteroid, this.ship)) {
+                this.ship.isCompromised = true;
+                asteroid.isColliding = true;
             }
             asteroid.update(elapsed);
         }, this);
@@ -79,6 +84,14 @@ export class Game {
             this.projectileCount++;
             this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
         }
+    }
+
+    areColliding(obj1, obj2) {
+        return this.distanceBetween(obj1, obj2) < obj1.radius + obj2.radius;
+    }
+
+    distanceBetween(obj1, obj2) {
+        return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2));
     }
 }
 export class Mass {
@@ -99,6 +112,9 @@ export class Mass {
         this.ySpeed = options.ySpeed;
         this.rotationSpeed = options.rotationSpeed;
         this.rotateValue = options.rotateValue;
+        this.flameOptions = options.flameOptions;
+
+        this.massElement = null;
     }
 
     update(elapsed) {
@@ -140,8 +156,10 @@ export class Mass {
     }
 
     animateElement() {
-        const targetElement = document.querySelector(`#${this.groupId || this.id}`);
-        targetElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
+        if (this.massElement == undefined) {
+            this.massElement = document.querySelector(`#${this.groupId || this.id}`);
+        }
+        this.massElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
     }
 }
 export class Ship extends Mass {
@@ -163,27 +181,37 @@ export class Ship extends Mass {
         this.weaponReloadTime = options.weaponReloadTime;
         this.timeUntilReloaded = this.weaponReloadTime;
         this.thrusterPower = options.thrusterPower;
-        this.steeringPower = options.thrusterPower / 20;
+        this.steeringPower = this.thrusterPower / 20;
         this.thrusterOn = false;
         this.rightThrusterOn = false;
         this.leftThrusterOn = false;
+        this.isCompromised = false;
+        this.maxHealth = options.maxHealth;
+        this.health = this.maxHealth;
 
-        this.init();
-    }
-
-    init() {
         $svg.drawShip(gameNode, this);
         this.animateElement();
+        this.groupTagElement = document.getElementById(this.groupTagOptions.id);
+        this.guideGroupTagElement = document.getElementById(this.guideGroupTagOptions.id);
+        this.guideCircleElement = this.guideGroupTagElement.querySelector('circle');
+        this.flameElement = document.querySelector(`#ship-flame`);
     }
 
     switchThruster() {
-        const targetElement = document.querySelector(`#ship-flame`);
-        targetElement.style.display = this.thrusterOn ? 'inline' : 'none';
+        this.flameElement.setAttribute('display', this.thrusterOn ? 'inline' : 'none');
     }
+
     update(elapsed) {
         this.loaded = this.timeUntilReloaded === 0;
         if (!this.loaded) {
             this.timeUntilReloaded -= Math.min(elapsed, this.timeUntilReloaded);
+        }
+        if (this.guide) {
+            if (this.isCompromised) {
+                this.guideCircleElement.setAttribute('stroke', 'red');
+            } else {
+                this.guideCircleElement.setAttribute('stroke', 'white');
+            }
         }
         this.switchThruster();
         this.push(this.rotateValue, this.thrusterOn * this.thrusterPower, elapsed);
@@ -201,9 +229,8 @@ export class Ship extends Mass {
     }
 
     switchGuide() {
-        const targetElement = document.querySelector(`#ship-guide`);
         this.guide = !this.guide;
-        targetElement.style.display = this.guide ? 'inline' : 'none';
+        this.guideGroupTagElement.setAttribute('display', this.guide ? 'inline' : 'none');
     }
 }
 
@@ -214,6 +241,7 @@ export class Asteroid extends Mass {
         super(options);
         this.id = id;
         this.groupId = options.groupId;
+        this.isColliding = false;
         this.class = options.class;
         this.circumference = 2 * Math.PI * this.radius;
         this.segments = Math.min(25, Math.max(5, Math.ceil(this.circumference / 15)));
@@ -223,22 +251,30 @@ export class Asteroid extends Mass {
         for (let i = 0; i < this.segments; i++) {
             this.shape.push(2 * Math.random() - 0.5);
         }
-        this.init();
+        this.draw();
+        this.animateElement();
+        this.guideElement = document.getElementById(`guide-${this.id}`);
+        this.guideCircleElement = this.guideElement.querySelector('circle');
     }
 
     draw() {
         $svg.drawAsteroid(gameNode, this);
     }
 
-    init() {
-        this.draw();
-        this.animateElement();
+    update(elapsed) {
+        if (this.guide) {
+            if (this.isColliding) {
+                this.guideCircleElement.setAttribute('stroke', this.guideOptions.collidingColor);
+            } else {
+                this.guideCircleElement.setAttribute('stroke', this.guideOptions.stroke);
+            }
+        }
+        Mass.prototype.update.apply(this, arguments);
     }
 
     switchGuide() {
-        const targetElement = document.querySelector(`#asteroid-guide-group-tag-${this.id}`);
         this.guide = !this.guide;
-        targetElement.style.display = this.guide ? 'inline' : 'none';
+        this.guideElement.setAttribute('display', this.guide ? 'inline' : 'none');
     }
 }
 

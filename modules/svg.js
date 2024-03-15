@@ -150,7 +150,6 @@ $svgPrivate.buildDAttributeForFlame = function (options) {
 $svg.drawFlame = function (parentNode, options) {
     options.d = $svgPrivate.buildDAttributeForFlame(options);
     let shipFlameNode = $svgPrivate.setBasicAttributes('path', options);
-
     parentNode.appendChild(shipFlameNode);
 };
 /**
@@ -187,13 +186,13 @@ $svgPrivate.buildDAttributeForShip = function (options, coordinates) {
  * @param {Object} options options defining the element
  * @returns void
  */
-$svgPrivate.drawShipPaths = function (parentNode, options) {
-    const coordinates = $svgPrivate.buildShipCoordinatesObject(options);
-    options.d = $svgPrivate.buildDAttributeForShip(options, coordinates);
+$svgPrivate.drawShipPaths = function (parentNode, guideNode, shipInstance) {
+    const coordinates = $svgPrivate.buildShipCoordinatesObject(shipInstance);
+    shipInstance.d = $svgPrivate.buildDAttributeForShip(shipInstance, coordinates);
 
-    const outputElement = $svgPrivate.setBasicAttributes('path', options);
-    const waypoints = $svgPrivate.setBasicAttributes('path', options.guideWaypoints);
-    options.guideGroupTag.appendChild(waypoints);
+    const outputElement = $svgPrivate.setBasicAttributes('path', shipInstance);
+    const waypoints = $svgPrivate.setBasicAttributes('path', shipInstance.guideWaypoints);
+    guideNode.appendChild(waypoints);
 
     parentNode.appendChild(outputElement);
 };
@@ -211,24 +210,19 @@ $svgPrivate.drawShipGuide = function (groupTag, options) {
  * @param {Object} options options defining the element
  * @returns void
  */
-$svg.drawShip = function (gameNode, options = {}) {
-    let groupTagOptions = options.groupTagOptions ?? {};
-    let flameOptions = options.flameOptions ?? {};
-    groupTagOptions = $helpers.assignDefaultValues('groupTagSVG', groupTagOptions, gameNode);
-    flameOptions = $helpers.assignDefaultValues('shipFlame', flameOptions, gameNode, options);
+$svg.drawShip = function (gameNode, shipInstance) {
+    shipInstance.groupTagOptions = $helpers.assignDefaultValues('groupTagSVG', shipInstance.groupTagOptions, gameNode, shipInstance);
+    shipInstance.flameOptions = $helpers.assignDefaultValues('shipFlame', shipInstance.flameOptions, gameNode, shipInstance);
+    shipInstance.guideOptions = $helpers.assignDefaultValues('shipGuide', shipInstance.guideOptions, gameNode, shipInstance);
+    shipInstance.guideGroupTagOptions = $helpers.assignDefaultValues('guideGroupTag', shipInstance.guideGroupTagOptions, gameNode, shipInstance);
 
-    const shipGroupTag = $svgPrivate.setBasicAttributes('g', groupTagOptions);
-    let guideGroupTag;
+    const shipGroupTag = $svgPrivate.setBasicAttributes('g', shipInstance.groupTagOptions);
+    $svg.drawFlame(shipGroupTag, shipInstance.flameOptions);
 
-    $svg.drawFlame(shipGroupTag, flameOptions);
-    let guideGroupTagOptions = $helpers.assignDefaultValues('guideGroupTag', groupTagOptions, gameNode, options);
-    guideGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTagOptions);
-    let guideOptions = options.guideOptions ?? {};
-    guideOptions = $helpers.assignDefaultValues('shipGuide', guideOptions, gameNode, options);
-    $svgPrivate.drawShipGuide(guideGroupTag, guideOptions);
-    options.guideGroupTag = guideGroupTag;
+    const guideGroupTag = $svgPrivate.setBasicAttributes('g', shipInstance.guideGroupTagOptions);
+    $svgPrivate.drawShipGuide(guideGroupTag, shipInstance.guideOptions);
 
-    $svgPrivate.drawShipPaths(shipGroupTag, options);
+    $svgPrivate.drawShipPaths(shipGroupTag, guideGroupTag, shipInstance);
     shipGroupTag.appendChild(guideGroupTag);
     gameNode.appendChild(shipGroupTag);
 };
@@ -254,19 +248,19 @@ $svgPrivate.crateAsteroidsElement = function (options) {
 
     return pathElement;
 };
-$svg.drawAsteroid = function (gameNode, options = {}) {
-    const asteroidGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: options.groupId}, gameNode, options);
+$svg.drawAsteroid = function (gameNode, asteroidInstance) {
+    const asteroidGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: asteroidInstance.groupId}, gameNode, asteroidInstance);
     const asteroidGroupTag = $svgPrivate.setBasicAttributes('g', asteroidGroupTagOptions);
-    const asteroidsElement = $svgPrivate.crateAsteroidsElement(options);
+    const asteroidsElement = $svgPrivate.crateAsteroidsElement(asteroidInstance);
 
     //Setting up guide
-    let guideCircleOptions = structuredClone(options);
-    guideCircleOptions = $helpers.assignDefaultValues('asteroidGuide', guideCircleOptions, gameNode, options);
+    let guideCircleOptions = $helpers.assignDefaultValues('asteroidGuide', {}, gameNode, asteroidInstance);
     const guideCircle = $svgPrivate.drawCircle(guideCircleOptions);
-    const guideGroupTag = $helpers.assignDefaultValues('asteroidGuideGroupTag', {}, gameNode, options);
+    const guideGroupTag = $helpers.assignDefaultValues('asteroidGuideGroupTag', {}, gameNode, asteroidInstance);
     const asteroidGuideGroupTag = $svgPrivate.setBasicAttributes('g', guideGroupTag);
     asteroidGuideGroupTag.appendChild(guideCircle);
     asteroidGroupTag.appendChild(asteroidGuideGroupTag);
+    asteroidInstance.guideOptions = guideCircleOptions;
 
     asteroidGroupTag.appendChild(asteroidsElement);
     gameNode.appendChild(asteroidGroupTag);
