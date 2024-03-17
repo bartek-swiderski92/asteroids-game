@@ -4,7 +4,7 @@ import $helpers from '../modules/helpers.js';
 const $svg = {};
 const $svgPrivate = {};
 
-$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy', 'display'];
+$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy', 'display', 'x', 'y', 'height', 'width', 'innerHTML'];
 
 $svgPrivate.drawCircle = function (options = {}) {
     let circle = $svgPrivate.setBasicAttributes('circle', options);
@@ -56,6 +56,30 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
     }
     gameNode.appendChild(gridGTag);
 };
+$svgPrivate.drawHealthBar = function (options) {
+    let groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
+    let hpText = $svgPrivate.setBasicAttributes('text', options.hpText);
+
+    let groupHpBar = $svgPrivate.setBasicAttributes('g', options.groupHpBar);
+    let maxHpBar = $svgPrivate.setBasicAttributes('rect', options.maxHpBar);
+    let currentHpBar = $svgPrivate.setBasicAttributes('rect', options.currentHpBar);
+    groupHpBar.appendChild(maxHpBar);
+    groupHpBar.appendChild(currentHpBar);
+    groupHpTag.appendChild(hpText);
+    groupHpTag.appendChild(groupHpBar);
+
+    return groupHpTag;
+};
+
+$svg.drawUI = function (gameNode, gameInstance) {
+    const nestedOptionsObjects = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
+    const hpBarOptions = gameInstance.UI.hpBarOptions ?? {};
+    nestedOptionsObjects.forEach((optionObject) => {
+        hpBarOptions[optionObject] = $helpers.assignDefaultValues(optionObject, hpBarOptions[optionObject], gameNode, hpBarOptions);
+    });
+    let healthBar = $svgPrivate.drawHealthBar(hpBarOptions);
+    gameNode.appendChild(healthBar);
+};
 
 /**
  * @public
@@ -69,9 +93,12 @@ $svgPrivate.setBasicAttributes = function (elementType, attributes = {}) {
     let element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
     let filteredAttributes = $svgPrivate.filterAttributes(attributes);
     Object.keys(filteredAttributes).forEach((key) => {
-        element.setAttribute($helpers.kebabToCamelCase(key), filteredAttributes[key]);
+        if (key === 'innerHTML') {
+            element.innerHTML = filteredAttributes[key];
+        } else {
+            element.setAttribute($helpers.kebabToCamelCase(key), filteredAttributes[key]);
+        }
     });
-
     return element;
 };
 

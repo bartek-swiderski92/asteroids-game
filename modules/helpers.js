@@ -58,7 +58,7 @@ $helpers.kebabToCamelCase = function (string) {
  * @param {Object} gameNode the svg game node
  * @returns {Object} options
  * */
-
+//TODO Refactor the below method to a settings.json file
 $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, globalOptions) {
     switch (gameElement) {
         case 'grid':
@@ -68,6 +68,38 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.lineColor = options.lineColor ?? '#00FF00';
             options.textColor = options.textColor ?? '#009900';
             options.display = globalOptions.guide ? 'inline' : 'none';
+            break;
+        case 'groupHpTag':
+            options.id = 'group-hp-tag';
+            break;
+        case 'hpText':
+            options.id = 'hp-text';
+            options.class = 'standard-text red-text';
+            options.innerHTML = 'HP';
+            options.x = 15;
+            options.y = 20;
+            break;
+        case 'groupHpBar':
+            options.id = 'group-hp-bar';
+            break;
+        case 'maxHpBar':
+            options.id = 'max-hp-bar';
+            options.stroke = 'white';
+            options.strokeWidth = 1;
+            options.fill = 'transparent';
+            options.width = options.width ?? 70;
+            options.height = options.height ?? 15;
+            options.x = globalOptions.hpText.x + 25;
+            options.y = globalOptions.hpText.y - 10;
+            break;
+        case 'currentHpBar':
+            options.id = 'current-hp-bar';
+            options.stroke = 'green';
+            options.fill = 'green';
+            options.width = globalOptions.maxHpBar.width - globalOptions.maxHpBar.strokeWidth * 2;
+            options.height = globalOptions.maxHpBar.height - globalOptions.maxHpBar.strokeWidth * 2;
+            options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.strokeWidth;
+            options.y = globalOptions.maxHpBar.y + globalOptions.maxHpBar.strokeWidth;
             break;
         case 'massClass':
             options.mass = options.mass ?? 1;
@@ -132,7 +164,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'guideWaypoints':
             options.fill = 'white';
-            options.stroke = 'rgba(255,255,255, 0.5';
+            options.stroke = 'rgba(255,255,255, 0.5)';
             options.strokeWidth = '1px';
             options.d = '';
             break;

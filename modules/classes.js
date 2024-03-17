@@ -17,10 +17,16 @@ export class Game {
         }
         window.requestAnimationFrame(this.frame.bind(this));
         this.gridElement = document.getElementById('grid');
+        this.UI = options.UI ?? {};
+        this.drawUI();
     }
 
     drawGrid() {
         $svg.drawGrid(gameNode, this);
+    }
+
+    drawUI() {
+        $svg.drawUI(gameNode, this);
     }
 
     switchGuide() {
@@ -216,6 +222,9 @@ export class Ship extends Mass {
         this.switchThruster();
         this.push(this.rotateValue, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
+        if (this.isCompromised) {
+            this.health -= Math.min(elapsed, this.health);
+        }
         Mass.prototype.update.apply(this, arguments);
     }
 
@@ -253,7 +262,6 @@ export class Asteroid extends Mass {
         }
         this.draw();
         this.animateElement();
-        console.log(this);
         this.guideElement = document.getElementById(this.guideOptions.id);
         this.guideCircleElement = this.guideElement.querySelector('circle');
     }
