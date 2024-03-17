@@ -224,6 +224,7 @@ export class Ship extends Mass {
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         if (this.isCompromised) {
             this.health -= Math.min(elapsed, this.health);
+            $svg.transformHealthBar(this);
         }
         Mass.prototype.update.apply(this, arguments);
     }

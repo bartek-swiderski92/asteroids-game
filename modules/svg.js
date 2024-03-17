@@ -81,6 +81,16 @@ $svg.drawUI = function (gameNode, gameInstance) {
     gameNode.appendChild(healthBar);
 };
 
+$svg.transformHealthBar = function (shipInstance) {
+    //TODO removed hardcoded values once settings.json is implemented
+    const currentHpBarEl = document.getElementById('current-hp-bar');
+    const maxHpBarEl = document.getElementById('max-hp-bar');
+    const maxHpWidth = maxHpBarEl.getAttribute('width') - 2 * maxHpBarEl.getAttribute('stroke-width');
+
+    let currentHealth = shipInstance.health / shipInstance.maxHealth;
+    currentHpBarEl.setAttribute('width', maxHpWidth * currentHealth);
+};
+
 /**
  * @public
  * @description
