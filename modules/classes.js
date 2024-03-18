@@ -23,7 +23,7 @@ export class Game {
         this.massDestroyed = 500;
         this.score = 0;
 
-        this.UI = options.UI ?? {};
+        this.populateUiSettings(options);
         this.drawUI();
     }
 
@@ -31,8 +31,17 @@ export class Game {
         $svg.drawGrid(gameNode, this);
     }
 
+    populateUiSettings(options) {
+        this.UI = options.UI ?? {};
+        this.UI.hpBarOptions = this.UI.hpBarOptions ?? {};
+        const hpNestedOptions = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
+        hpNestedOptions.forEach((optionObject) => {
+            this.UI.hpBarOptions[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.hpBarOptions[optionObject], gameNode, this.UI.hpBarOptions);
+        });
+    }
+
     drawUI() {
-        $svg.drawUI(gameNode, this);
+        $svg.drawUI(this.UI, gameNode);
     }
 
     switchGuide() {

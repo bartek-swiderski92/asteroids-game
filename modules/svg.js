@@ -56,29 +56,26 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
     }
     gameNode.appendChild(gridGTag);
 };
-$svgPrivate.drawHealthBar = function (options) {
-    let groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
-    let hpText = $svgPrivate.setBasicAttributes('text', options.hpText);
+$svgPrivate.drawHealthBar = function (options, gameNode) {
+    const groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
+    const hpText = $svgPrivate.setBasicAttributes('text', options.hpText);
 
-    let groupHpBar = $svgPrivate.setBasicAttributes('g', options.groupHpBar);
-    let maxHpBar = $svgPrivate.setBasicAttributes('rect', options.maxHpBar);
-    let currentHpBar = $svgPrivate.setBasicAttributes('rect', options.currentHpBar);
+    const groupHpBar = $svgPrivate.setBasicAttributes('g', options.groupHpBar);
+    const maxHpBar = $svgPrivate.setBasicAttributes('rect', options.maxHpBar);
+    const currentHpBar = $svgPrivate.setBasicAttributes('rect', options.currentHpBar);
+
     groupHpBar.appendChild(maxHpBar);
     groupHpBar.appendChild(currentHpBar);
+
     groupHpTag.appendChild(hpText);
     groupHpTag.appendChild(groupHpBar);
 
     return groupHpTag;
 };
 
-$svg.drawUI = function (gameNode, gameInstance) {
-    const nestedOptionsObjects = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
-    const hpBarOptions = gameInstance.UI.hpBarOptions ?? {};
-    nestedOptionsObjects.forEach((optionObject) => {
-        hpBarOptions[optionObject] = $helpers.assignDefaultValues(optionObject, hpBarOptions[optionObject], gameNode, hpBarOptions);
-    });
-    let healthBar = $svgPrivate.drawHealthBar(hpBarOptions);
-    gameInstance.UI.hpBarOptions = hpBarOptions;
+$svg.drawUI = function (UIOptions, gameNode) {
+    const healthBar = $svgPrivate.drawHealthBar(UIOptions.hpBarOptions, gameNode);
+
     gameNode.appendChild(healthBar);
 };
 

@@ -2,7 +2,9 @@
 import {Game} from '../modules/classes.js';
 import $helpers from '../modules/helpers.js';
 //settings
-const game = new Game({guide: true});
+const game = new Game();
+
+// const game = new Game({guide: true});
 
 // const game = new Game({asteroidStartCount: 32});
 
