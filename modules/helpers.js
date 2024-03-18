@@ -103,6 +103,9 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.strokeWidth;
             options.y = globalOptions.maxHpBar.y + globalOptions.maxHpBar.strokeWidth;
             break;
+        case 'groupScoreTag':
+            options.id = 'group-score-tag';
+            break;
         case 'scoreLabel':
             options.id = 'score-label';
             options.class = 'standard-text';
@@ -118,8 +121,25 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             for (let i = 0; i < options.numberOfDigits; i++) {
                 options.innerHTML += '0';
             }
-            options.x = gameNode.clientWidth - 80;
-            options.y = 20;
+            options.x = globalOptions.scoreLabel.x + 50;
+            options.y = globalOptions.scoreLabel.y;
+            break;
+        case 'groupFpsTag':
+            options.id = 'group-fps-tag';
+            break;
+        case 'fpsLabel':
+            options.id = 'fps-label';
+            options.class = 'standard-text';
+            options.innerHTML = options.innerHTML ?? 'FPS: ';
+            options.x = gameNode.clientWidth - 65;
+            options.y = gameNode.clientHeight - 20;
+            break;
+        case 'currentFps':
+            options.id = 'current-fps';
+            options.class = 'standard-text';
+            options.innerHTML = '000';
+            options.x = globalOptions.fpsLabel.x + 35;
+            options.y = globalOptions.fpsLabel.y;
             break;
         case 'massClass':
             options.mass = options.mass ?? 1;

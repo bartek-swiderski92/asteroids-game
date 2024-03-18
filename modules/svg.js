@@ -84,13 +84,26 @@ $svgPrivate.drawScore = function (options) {
 
     return groupScoreTag;
 };
+$svgPrivate.drawFps = function (options) {
+    const groupScoreTag = $svgPrivate.setBasicAttributes('g', options.groupFpsTag);
+
+    const scoreLabel = $svgPrivate.setBasicAttributes('text', options.fpsLabel);
+    const currentScore = $svgPrivate.setBasicAttributes('text', options.currentFps);
+
+    groupScoreTag.appendChild(scoreLabel);
+    groupScoreTag.appendChild(currentScore);
+
+    return groupScoreTag;
+};
 
 $svg.drawUI = function (UIOptions, gameNode) {
-    const healthBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
-    const score = $svgPrivate.drawScore(UIOptions.score, gameNode);
+    const hpBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
+    const score = $svgPrivate.drawScore(UIOptions.score);
+    const fps = $svgPrivate.drawFps(UIOptions.fps);
 
-    gameNode.appendChild(healthBar);
+    gameNode.appendChild(hpBar);
     gameNode.appendChild(score);
+    gameNode.appendChild(fps);
 };
 
 $svg.transformHealthBar = function (shipInstance) {

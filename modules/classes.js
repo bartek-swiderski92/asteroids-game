@@ -25,6 +25,8 @@ export class Game {
 
         this.populateUiSettings(options);
         this.drawUI();
+        this.currentFps = 0;
+        this.fpsCounterElement = document.getElementById('current-fps');
     }
 
     drawGrid() {
@@ -41,9 +43,15 @@ export class Game {
         });
 
         this.UI.score = this.UI.score ?? {};
-        const scoreNestedOptions = ['scoreLabel', 'currentScore'];
+        const scoreNestedOptions = ['groupScoreTag', 'scoreLabel', 'currentScore'];
         scoreNestedOptions.forEach((optionObject) => {
             this.UI.score[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.score[optionObject], gameNode, this.UI.score);
+        });
+
+        this.UI.fps = this.UI.fps ?? {};
+        const fpsNestedOptions = ['groupFpsTag', 'fpsLabel', 'currentFps'];
+        fpsNestedOptions.forEach((optionObject) => {
+            this.UI.fps[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.fps[optionObject], gameNode, this.UI.fps);
         });
     }
 
@@ -79,9 +87,17 @@ export class Game {
         return asteroid;
     }
 
+    updateFps(fps) {
+        if (fps !== this.currentFps) {
+            this.currentFps = fps;
+            this.fpsCounterElement.innerHTML = parseInt(fps);
+        }
+    }
+
     frame(timestamp) {
         if (!this.previous) this.previous = timestamp;
         let elapsed = timestamp - this.previous;
+        this.updateFps(1000 / elapsed);
         this.update(elapsed / 1000);
         this.previous = timestamp;
         window.requestAnimationFrame(this.frame.bind(this));
@@ -271,6 +287,7 @@ export class Ship extends Mass {
     }
 
     switchThruster() {
+        //TODO Add flag to improve performance
         this.flameElement.setAttribute('display', this.thrusterOn ? 'inline' : 'none');
     }
 
