@@ -78,6 +78,7 @@ $svg.drawUI = function (gameNode, gameInstance) {
         hpBarOptions[optionObject] = $helpers.assignDefaultValues(optionObject, hpBarOptions[optionObject], gameNode, hpBarOptions);
     });
     let healthBar = $svgPrivate.drawHealthBar(hpBarOptions);
+    gameInstance.UI.hpBarOptions = hpBarOptions;
     gameNode.appendChild(healthBar);
 };
 

@@ -75,7 +75,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'hpText':
             options.id = 'hp-text';
             options.class = 'standard-text red-text';
-            options.innerHTML = 'HP';
+            options.innerHTML = options.innerHTML ?? 'HP';
             options.x = 15;
             options.y = 20;
             break;
@@ -90,12 +90,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.width = options.width ?? 70;
             options.height = options.height ?? 15;
             options.x = globalOptions.hpText.x + 25;
+            //TODO Below add logic for calculating space for the health bar
+            // options.x = globalOptions.hpText.x + globalOptions.hpText.innerHTML.length * 8;
             options.y = globalOptions.hpText.y - 10;
             break;
         case 'currentHpBar':
             options.id = 'current-hp-bar';
-            options.stroke = 'green';
-            options.fill = 'green';
+            options.stroke = options.stroke ?? 'green';
+            options.fill = options.fill ?? 'green';
             options.width = globalOptions.maxHpBar.width - globalOptions.maxHpBar.strokeWidth * 2;
             options.height = globalOptions.maxHpBar.height - globalOptions.maxHpBar.strokeWidth * 2;
             options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.strokeWidth;

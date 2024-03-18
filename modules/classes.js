@@ -4,10 +4,10 @@ import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
 
 export class Game {
-    constructor(options) {
+    constructor(options = {}) {
         this.guide = options.guide;
         this.drawGrid();
-        this.ship = new Ship({guide: this.guide});
+        this.ship = new Ship(options);
         this.projectileCount = 0;
         this.asteroidCount = 0;
         this.projectiles = [];
@@ -93,6 +93,7 @@ export class Game {
                 projectile.destroy(this.projectiles);
             } else {
                 this.asteroids.forEach((asteroid) => {
+                    //TODO Add collision lines between projectiles and asteroids (needs refactor due to multiple ids)
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false) {
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
