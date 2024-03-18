@@ -56,7 +56,7 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
     }
     gameNode.appendChild(gridGTag);
 };
-$svgPrivate.drawHealthBar = function (options, gameNode) {
+$svgPrivate.drawHealthBar = function (options) {
     const groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
     const hpText = $svgPrivate.setBasicAttributes('text', options.hpText);
 
@@ -73,10 +73,24 @@ $svgPrivate.drawHealthBar = function (options, gameNode) {
     return groupHpTag;
 };
 
+$svgPrivate.drawScore = function (options) {
+    const groupScoreTag = $svgPrivate.setBasicAttributes('g', options.groupScoreTag);
+
+    const scoreLabel = $svgPrivate.setBasicAttributes('text', options.scoreLabel);
+    const currentScore = $svgPrivate.setBasicAttributes('text', options.currentScore);
+
+    groupScoreTag.appendChild(scoreLabel);
+    groupScoreTag.appendChild(currentScore);
+
+    return groupScoreTag;
+};
+
 $svg.drawUI = function (UIOptions, gameNode) {
-    const healthBar = $svgPrivate.drawHealthBar(UIOptions.hpBarOptions, gameNode);
+    const healthBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
+    const score = $svgPrivate.drawScore(UIOptions.score, gameNode);
 
     gameNode.appendChild(healthBar);
+    gameNode.appendChild(score);
 };
 
 $svg.transformHealthBar = function (shipInstance) {

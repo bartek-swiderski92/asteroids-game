@@ -74,7 +74,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'hpText':
             options.id = 'hp-text';
-            options.class = 'standard-text red-text';
+            options.class = 'standard-text';
             options.innerHTML = options.innerHTML ?? 'HP';
             options.x = 15;
             options.y = 20;
@@ -102,6 +102,24 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.height = globalOptions.maxHpBar.height - globalOptions.maxHpBar.strokeWidth * 2;
             options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.strokeWidth;
             options.y = globalOptions.maxHpBar.y + globalOptions.maxHpBar.strokeWidth;
+            break;
+        case 'scoreLabel':
+            options.id = 'score-label';
+            options.class = 'standard-text';
+            options.innerHTML = options.innerHTML ?? 'Score: ';
+            options.x = gameNode.clientWidth - 130;
+            options.y = 20;
+            break;
+        case 'currentScore':
+            options.id = 'current-score';
+            options.class = 'standard-text';
+            options.numberOfDigits = options.numberOfDigits ?? 10;
+            options.innerHTML = '';
+            for (let i = 0; i < options.numberOfDigits; i++) {
+                options.innerHTML += '0';
+            }
+            options.x = gameNode.clientWidth - 80;
+            options.y = 20;
             break;
         case 'massClass':
             options.mass = options.mass ?? 1;

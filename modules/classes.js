@@ -33,10 +33,17 @@ export class Game {
 
     populateUiSettings(options) {
         this.UI = options.UI ?? {};
-        this.UI.hpBarOptions = this.UI.hpBarOptions ?? {};
+
+        this.UI.hpBar = this.UI.hpBar ?? {};
         const hpNestedOptions = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
         hpNestedOptions.forEach((optionObject) => {
-            this.UI.hpBarOptions[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.hpBarOptions[optionObject], gameNode, this.UI.hpBarOptions);
+            this.UI.hpBar[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.hpBar[optionObject], gameNode, this.UI.hpBar);
+        });
+
+        this.UI.score = this.UI.score ?? {};
+        const scoreNestedOptions = ['scoreLabel', 'currentScore'];
+        scoreNestedOptions.forEach((optionObject) => {
+            this.UI.score[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.score[optionObject], gameNode, this.UI.score);
         });
     }
 
@@ -126,7 +133,7 @@ export class Game {
 
     mountAsteroidChild(asteroid, childMass, elapsed) {
         if (childMass < this.massDestroyed) {
-            this.score += childMass;
+            this.updateScore(childMass);
         } else {
             const child = asteroid.createChild(this, childMass);
             this.pushAsteroid(child, elapsed);
@@ -136,7 +143,8 @@ export class Game {
 
     splitAsteroid(asteroid, elapsed) {
         asteroid.mass -= this.massDestroyed;
-        this.score += this.massDestroyed;
+        this.updateScore(this.massDestroyed);
+
         const split = 0.25 + 0.5 * Math.random();
 
         this.mountAsteroidChild(asteroid, split * asteroid.mass, elapsed);
@@ -145,6 +153,18 @@ export class Game {
         if (asteroid.destroyed === false) {
             asteroid.destroy(this.asteroids);
         }
+    }
+    updateScore(score) {
+        let result = '';
+        this.score += score;
+        let currentScoreNode = document.getElementById('current-score');
+        let stringifiedValue = Math.round(this.score).toString();
+        let characterDifference = this.UI.score.currentScore.numberOfDigits - stringifiedValue.length;
+        for (let i = 0; i < characterDifference; i++) {
+            result += '0';
+        }
+        result += stringifiedValue;
+        currentScoreNode.innerHTML = result;
     }
 }
 export class Mass {
