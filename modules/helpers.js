@@ -37,10 +37,9 @@ $helpers.handleKeyPress = function (event, value, game) {
         }
     } else {
         switch (event.key || event.keyCode) {
-            case ' ':
-            case 32:
-                console.log('play again');
-                // game.resetGame();
+            case 'Enter':
+            case 13:
+                game.resetGame();
                 break;
         }
     }
@@ -285,7 +284,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'gameOverSpaceBar':
             options.id = 'game-over-press-space-bar';
-            options.innerHTML = options.innerHTML ?? 'Press space bar to play again';
+            options.innerHTML = options.innerHTML ?? 'Press Enter to play again';
             options.class = options.class ?? 'text message-text';
             break;
     }

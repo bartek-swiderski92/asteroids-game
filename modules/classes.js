@@ -6,36 +6,31 @@ const textOverlay = document.querySelector('#text-overlay');
 
 export class Game {
     constructor(options = {}) {
-        this.guide = options.guide;
+        this.options = options;
+        this.guide = false;
         this.drawGrid();
-        this.ship = new Ship(options);
         this.projectileCount = 0;
         this.asteroidCount = 0;
-        this.projectiles = [];
-        this.asteroids = [];
         this.asteroidStartCount = options.asteroidStartCount ?? 4;
-        for (let i = 0; i < this.asteroidStartCount; i++) {
-            this.asteroids.push(this.movingAsteroid(i));
-            this.asteroidCount++;
-        }
         this.massDestroyed = 500;
-        this.score = 0;
-        this.gameOver = false;
+        this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));
         this.gridElement = document.getElementById('grid');
+        this.populateUiSettings();
+        this.resetGame();
         this.gameOverSettings = options.gameOverSettings ?? {};
-        this.populateUiSettings(options);
         this.drawUI();
         this.currentFps = 0;
         this.fpsCounterElement = document.getElementById('current-fps');
+        // this.endGame();
     }
 
     drawGrid() {
         $svg.drawGrid(gameNode, this);
     }
 
-    populateUiSettings(options) {
-        this.UI = options.UI ?? {};
+    populateUiSettings() {
+        this.UI = this.options.UI ?? {};
 
         this.UI.hpBar = this.UI.hpBar ?? {};
         const hpNestedOptions = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
@@ -64,8 +59,8 @@ export class Game {
         const collisionLines = [...document.querySelectorAll('.collision-line')];
         this.guide = !this.guide;
         this.gridElement.setAttribute('display', this.guide ? 'inline' : 'none');
-        this.ship.switchGuide();
-        this.asteroids.forEach((asteroid) => asteroid.switchGuide());
+        this.ship.switchGuide(this.guide);
+        this.asteroids.forEach((asteroid) => asteroid.switchGuide(this.guide));
         collisionLines.forEach((line) => line.remove());
     }
 
@@ -186,7 +181,9 @@ export class Game {
                 result += '0';
             }
             result += stringifiedValue;
-            currentScoreNode.innerHTML = result;
+            if (currentScoreNode != undefined) {
+                currentScoreNode.innerHTML = result;
+            }
         }
     }
     endGame() {
@@ -201,6 +198,25 @@ export class Game {
         this.ship.ySpeed = 0;
         this.ship.rotationSpeed = 0;
         $svg.displayGameOverMessage(this, textOverlay);
+    }
+    resetGame() {
+        const svgClearArray = [...document.querySelectorAll('.asteroid-group-tag'), ...document.querySelectorAll('.collision-line'), ...document.querySelectorAll('.projectile'), document.querySelector('.message-group')];
+        svgClearArray.forEach((node) => node?.remove());
+        this.gameOver = false;
+        this.guide = false;
+        this.gridElement.setAttribute('display', 'none');
+        this.score = 0;
+        this.updateScore(0);
+        this.ship = new Ship(this.options);
+        $svg.transformHealthBar(this);
+
+        this.projectiles = [];
+        this.asteroids = [];
+
+        for (let i = 0; i < this.asteroidStartCount; i++) {
+            this.asteroids.push(this.movingAsteroid(i));
+            this.asteroidCount++;
+        }
     }
 }
 export class Mass {
@@ -304,6 +320,7 @@ export class Ship extends Mass {
         this.guideGroupTagElement = document.getElementById(this.shipGuideGroupOptions.id);
         this.guideCircleElement = this.guideGroupTagElement.querySelector('circle');
         this.flameElement = document.getElementById(this.shipFlameOptions.id);
+        $svg.transformHealthBar(this);
     }
 
     switchThruster() {
@@ -342,8 +359,8 @@ export class Ship extends Mass {
         return projectile;
     }
 
-    switchGuide() {
-        this.guide = !this.guide;
+    switchGuide(guide) {
+        this.guide = guide;
         this.guideGroupTagElement.setAttribute('display', this.guide ? 'inline' : 'none');
     }
 }
@@ -388,8 +405,8 @@ export class Asteroid extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    switchGuide() {
-        this.guide = !this.guide;
+    switchGuide(guide) {
+        this.guide = guide;
         this.guideElement.setAttribute('display', this.guide ? 'inline' : 'none');
     }
 
@@ -430,6 +447,7 @@ export class Projectile extends Mass {
         options = $helpers.assignDefaultValues('projectileClass', options, gameNode);
         super(options);
         this.id = id;
+        this.class = options.class;
         this.x = ship.x - Math.cos(Math.PI - ship.rotateValue) * ship.radius;
         this.y = ship.y + Math.sin(Math.PI - ship.rotateValue) * ship.radius;
         this.lifetime = options.lifetime;

@@ -110,10 +110,10 @@ $svg.transformHealthBar = function (shipInstance) {
     //TODO removed hardcoded values once settings.json is implemented
     const currentHpBarEl = document.getElementById('current-hp-bar');
     const maxHpBarEl = document.getElementById('max-hp-bar');
-    const maxHpWidth = maxHpBarEl.getAttribute('width') - 2 * maxHpBarEl.getAttribute('stroke-width');
+    const maxHpWidth = maxHpBarEl?.getAttribute('width') - 2 * maxHpBarEl?.getAttribute('stroke-width');
 
-    let currentHealth = shipInstance.health / shipInstance.maxHealth;
-    currentHpBarEl.setAttribute('width', maxHpWidth * currentHealth);
+    let calculatedHpBarWidth = (maxHpWidth * shipInstance.health) / shipInstance.maxHealth;
+    currentHpBarEl?.setAttribute('width', isFinite(calculatedHpBarWidth) ? calculatedHpBarWidth : maxHpWidth);
 };
 
 /**
@@ -359,12 +359,10 @@ $svg.displayGameOverMessage = function (gameInstance, parentNode) {
     gameInstance.gameOverSettings.gameOverSpaceBar = $helpers.assignDefaultValues('gameOverSpaceBar', gameInstance.gameOverSettings.gameOverSpaceBar);
 
     const gameOverWrapper = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverWrapper, false);
-    // const gameOverWrapper = $svgPrivate.setBasicAttributes('g', gameInstance.gameOverSettings.gameOverWrapper);
     const gameOverMessage = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverMessage, false);
     const gameOverResult = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverResult, false);
     const gameOverSpaceBar = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverSpaceBar, false);
-
-    gameOverResult.innerHTML += Math.round(gameInstance.score);
+    gameOverResult.innerHTML += Math.round(isFinite(gameInstance.score) ? gameInstance.score : 0);
 
     gameOverWrapper.appendChild(gameOverMessage);
     gameOverWrapper.appendChild(gameOverResult);
