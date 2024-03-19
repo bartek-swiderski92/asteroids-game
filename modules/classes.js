@@ -102,7 +102,7 @@ export class Game {
     }
 
     update(elapsed) {
-        this.ship.isCompromised = false;s
+        this.ship.isCompromised = false;
 
         if (this.asteroids.length === 0) {
             this.levelUp(elapsed);
