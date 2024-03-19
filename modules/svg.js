@@ -124,8 +124,13 @@ $svg.transformHealthBar = function (shipInstance) {
  * @param {Object} attributes options defining the element
  * @returns {Object} svg element
  * */
-$svgPrivate.setBasicAttributes = function (elementType, attributes = {}) {
-    let element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
+$svgPrivate.setBasicAttributes = function (elementType, attributes = {}, svg = true) {
+    let element;
+    if (svg) {
+        element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
+    } else {
+        element = document.createElement(elementType);
+    }
     let filteredAttributes = $svgPrivate.filterAttributes(attributes);
     Object.keys(filteredAttributes).forEach((key) => {
         if (key === 'innerHTML') {
@@ -340,6 +345,31 @@ $svg.drawProjectile = function (gameNode, projectileInstance) {
 
     let circle = $svgPrivate.drawCircle(projectileClone);
     gameNode.appendChild(circle);
+};
+
+$svgPrivate.displayMessage = function (string, options, gameNode) {
+    const messageNode = $svgPrivate.setBasicAttributes('text', options);
+    gameNode.appendChild(messageNode);
+};
+
+$svg.displayGameOverMessage = function (gameInstance, parentNode) {
+    gameInstance.gameOverSettings.gameOverWrapper = $helpers.assignDefaultValues('gameOverWrapper', gameInstance.gameOverSettings.gameOverWrapper);
+    gameInstance.gameOverSettings.gameOverMessage = $helpers.assignDefaultValues('gameOverMessage', gameInstance.gameOverSettings.gameOver);
+    gameInstance.gameOverSettings.gameOverResult = $helpers.assignDefaultValues('gameOverResult', gameInstance.gameOverSettings.gameOverResult);
+    gameInstance.gameOverSettings.gameOverSpaceBar = $helpers.assignDefaultValues('gameOverSpaceBar', gameInstance.gameOverSettings.gameOverSpaceBar);
+
+    const gameOverWrapper = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverWrapper, false);
+    // const gameOverWrapper = $svgPrivate.setBasicAttributes('g', gameInstance.gameOverSettings.gameOverWrapper);
+    const gameOverMessage = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverMessage, false);
+    const gameOverResult = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverResult, false);
+    const gameOverSpaceBar = $svgPrivate.setBasicAttributes('div', gameInstance.gameOverSettings.gameOverSpaceBar, false);
+
+    gameOverResult.innerHTML += Math.round(gameInstance.score);
+
+    gameOverWrapper.appendChild(gameOverMessage);
+    gameOverWrapper.appendChild(gameOverResult);
+    gameOverWrapper.appendChild(gameOverSpaceBar);
+    parentNode.appendChild(gameOverWrapper);
 };
 
 export default $svg;

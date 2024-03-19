@@ -2,6 +2,7 @@
 import $svg from '../modules/svg.js';
 import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
+const textOverlay = document.querySelector('#text-overlay');
 
 export class Game {
     constructor(options = {}) {
@@ -17,12 +18,12 @@ export class Game {
             this.asteroids.push(this.movingAsteroid(i));
             this.asteroidCount++;
         }
-        window.requestAnimationFrame(this.frame.bind(this));
-        this.gridElement = document.getElementById('grid');
-
         this.massDestroyed = 500;
         this.score = 0;
-
+        this.gameOver = false;
+        window.requestAnimationFrame(this.frame.bind(this));
+        this.gridElement = document.getElementById('grid');
+        this.gameOverSettings = options.gameOverSettings ?? {};
         this.populateUiSettings(options);
         this.drawUI();
         this.currentFps = 0;
@@ -117,7 +118,6 @@ export class Game {
             }
             asteroid.update(elapsed);
         }, this);
-        this.ship.update(elapsed);
 
         this.projectiles.forEach((projectile) => {
             projectile.update(elapsed);
@@ -133,6 +133,11 @@ export class Game {
                 }, this);
             }
         }, this);
+        if (this.ship.health <= 0 && this.gameOver === false) {
+            this.endGame();
+            return;
+        }
+        this.ship.update(elapsed);
         if (this.ship.trigger && this.ship.loaded) {
             this.projectileCount++;
             this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
@@ -171,16 +176,31 @@ export class Game {
         }
     }
     updateScore(score) {
-        let result = '';
-        this.score += score;
-        let currentScoreNode = document.getElementById('current-score');
-        let stringifiedValue = Math.round(this.score).toString();
-        let characterDifference = this.UI.score.currentScore.numberOfDigits - stringifiedValue.length;
-        for (let i = 0; i < characterDifference; i++) {
-            result += '0';
+        if (this.gameOver === false) {
+            let result = '';
+            this.score += score;
+            let currentScoreNode = document.getElementById('current-score');
+            let stringifiedValue = Math.round(this.score).toString();
+            let characterDifference = this.UI.score.currentScore.numberOfDigits - stringifiedValue.length;
+            for (let i = 0; i < characterDifference; i++) {
+                result += '0';
+            }
+            result += stringifiedValue;
+            currentScoreNode.innerHTML = result;
         }
-        result += stringifiedValue;
-        currentScoreNode.innerHTML = result;
+    }
+    endGame() {
+        this.gameOver = true;
+        this.ship.groupTagElement.remove();
+        this.ship.thrusterOn = false;
+        this.ship.leftThrusterOn = false;
+        this.ship.rightThrusterOn = false;
+        this.ship.retroOn = false;
+        this.ship.trigger = false;
+        this.ship.xSpeed = 0;
+        this.ship.ySpeed = 0;
+        this.ship.rotationSpeed = 0;
+        $svg.displayGameOverMessage(this, textOverlay);
     }
 }
 export class Mass {

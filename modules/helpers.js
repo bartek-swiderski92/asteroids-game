@@ -4,36 +4,47 @@ const $helpers = {};
 
 $helpers.handleKeyPress = function (event, value, game) {
     let nothingHandled;
-    switch (event.key || event.keyCode) {
-        case 'ArrowUp':
-        case 38:
-            game.ship.thrusterOn = value;
-            break;
-        case 'ArrowLeft':
-        case 37:
-            game.ship.leftThrusterOn = value;
-            break;
-        case 'ArrowRight':
-        case 39:
-            game.ship.rightThrusterOn = value;
-            break;
-        case 'ArrowDown':
-        case 40:
-            game.ship.retroOn = value;
-            break;
-        case ' ':
-        case 32:
-            game.ship.trigger = value;
-            break;
-        case 'g':
-        case '71':
-            if (value) {
-                game.switchGuide();
-            }
-            break;
-        default:
-            nothingHandled = true;
+    if (game.gameOver === false) {
+        switch (event.key || event.keyCode) {
+            case 'ArrowUp':
+            case 38:
+                game.ship.thrusterOn = value;
+                break;
+            case 'ArrowLeft':
+            case 37:
+                game.ship.leftThrusterOn = value;
+                break;
+            case 'ArrowRight':
+            case 39:
+                game.ship.rightThrusterOn = value;
+                break;
+            case 'ArrowDown':
+            case 40:
+                game.ship.retroOn = value;
+                break;
+            case ' ':
+            case 32:
+                game.ship.trigger = value;
+                break;
+            case 'g':
+            case '71':
+                if (value) {
+                    game.switchGuide();
+                }
+                break;
+            default:
+                nothingHandled = true;
+        }
+    } else {
+        switch (event.key || event.keyCode) {
+            case ' ':
+            case 32:
+                console.log('play again');
+                // game.resetGame();
+                break;
+        }
     }
+
     if (nothingHandled) {
         //    event.preventDefault();
     }
@@ -74,7 +85,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'hpText':
             options.id = 'hp-text';
-            options.class = 'standard-text';
+            options.class = 'text standard-text';
             options.innerHTML = options.innerHTML ?? 'HP';
             options.x = 15;
             options.y = 20;
@@ -108,14 +119,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'scoreLabel':
             options.id = 'score-label';
-            options.class = 'standard-text';
+            options.class = 'text standard-text';
             options.innerHTML = options.innerHTML ?? 'Score: ';
             options.x = gameNode.clientWidth - 130;
             options.y = 20;
             break;
         case 'currentScore':
             options.id = 'current-score';
-            options.class = 'standard-text';
+            options.class = 'text standard-text';
             options.numberOfDigits = options.numberOfDigits ?? 10;
             options.innerHTML = '';
             for (let i = 0; i < options.numberOfDigits; i++) {
@@ -129,14 +140,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'fpsLabel':
             options.id = 'fps-label';
-            options.class = 'standard-text';
+            options.class = 'text standard-text';
             options.innerHTML = options.innerHTML ?? 'FPS: ';
             options.x = gameNode.clientWidth - 65;
             options.y = gameNode.clientHeight - 20;
             break;
         case 'currentFps':
             options.id = 'current-fps';
-            options.class = 'standard-text';
+            options.class = 'text standard-text';
             options.innerHTML = '000';
             options.x = globalOptions.fpsLabel.x + 35;
             options.y = globalOptions.fpsLabel.y;
@@ -257,6 +268,25 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.class = 'collision-line';
             options.lineWidth = options.lineWidth ?? 0.5;
             options.stroke = options.stroke ?? 'white';
+            break;
+        case 'gameOverWrapper':
+            options.id = 'game-over-wrapper';
+            options.class = options.class ?? 'message-group';
+            break;
+        case 'gameOverMessage':
+            options.id = 'game-over-message';
+            options.innerHTML = options.innerHTML ?? 'Game Over';
+            options.class = options.class ?? 'text message-text';
+            break;
+        case 'gameOverResult':
+            options.id = 'game-over-result';
+            options.innerHTML = options.innerHTML ?? 'Your Score: ';
+            options.class = options.class ?? 'text message-text';
+            break;
+        case 'gameOverSpaceBar':
+            options.id = 'game-over-press-space-bar';
+            options.innerHTML = options.innerHTML ?? 'Press space bar to play again';
+            options.class = options.class ?? 'text message-text';
             break;
     }
     return options;

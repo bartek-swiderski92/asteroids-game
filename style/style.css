@@ -10,6 +10,30 @@ body {
     height: 100vh;
 }
 
+#text-overlay {
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: absolute;
+}
+
+#text-overlay .text {
+    color: white;
+    font-size: 3em;
+}
+
+#game-over-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
 #game {
     position: absolute;
     top: 0;
@@ -19,10 +43,11 @@ body {
     width: 100%;
     height: 100%;
 }
-
-.standard-text {
+.text {
     font-family: monospace;
     stroke-width: 0.5px;
     fill: white;
+}
+.standard-text {
     font-size: 1em;
 }
