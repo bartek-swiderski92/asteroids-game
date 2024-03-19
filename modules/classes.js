@@ -79,6 +79,8 @@ export class Game {
 
     movingAsteroid(index, elapsed) {
         let asteroid = new Asteroid(`asteroid-${index}`, {guide: this.guide});
+        this.asteroidCount++;
+        // console.log(this.asteroidCount);
         this.pushAsteroid(asteroid, elapsed);
         return asteroid;
     }
@@ -100,8 +102,11 @@ export class Game {
     }
 
     update(elapsed) {
-        this.ship.isCompromised = false;
+        this.ship.isCompromised = false;s
 
+        if (this.asteroids.length === 0) {
+            this.levelUp(elapsed);
+        }
         this.asteroids.forEach((asteroid) => {
             if (this.guide) {
                 this.drawCollisionLine(asteroid, this.ship);
@@ -202,6 +207,8 @@ export class Game {
     resetGame() {
         const svgClearArray = [...document.querySelectorAll('.asteroid-group-tag'), ...document.querySelectorAll('.collision-line'), ...document.querySelectorAll('.projectile'), document.querySelector('.message-group')];
         svgClearArray.forEach((node) => node?.remove());
+        this.level = 1;
+        this.displayLevelIndicator();
         this.gameOver = false;
         this.guide = false;
         this.gridElement.setAttribute('display', 'none');
@@ -215,7 +222,18 @@ export class Game {
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
             this.asteroids.push(this.movingAsteroid(i));
-            this.asteroidCount++;
+            // console.log(this.asteroidCount);
+        }
+    }
+
+    displayLevelIndicator() {
+        $svg.displayLevelIndicator(this, textOverlay);
+    }
+
+    levelUp() {
+        this.level += 1;
+        for (let i = 0; i < this.asteroidStartCount + this.level; i++) {
+            this.asteroids.push(this.movingAsteroid(this.asteroidCount + 1));
         }
     }
 }
@@ -243,6 +261,9 @@ export class Mass {
     }
 
     update(elapsed) {
+        // if (this.class === 'asteroid') {
+        //     console.log(this);
+        // }
         this.x += this.xSpeed * elapsed;
         this.y += this.ySpeed * elapsed;
         this.rotateValue += this.rotationSpeed * elapsed;
@@ -282,7 +303,11 @@ export class Mass {
 
     animateElement() {
         if (this.massElement == undefined) {
+            // console.log('if');
             this.massElement = document.querySelector(`#${this.groupId || this.id}`);
+        }
+        if (this.class === 'asteroid') {
+            console.log(this.massElement);
         }
         this.massElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
     }
@@ -367,6 +392,7 @@ export class Ship extends Mass {
 
 export class Asteroid extends Mass {
     constructor(id, options = {}) {
+        // console.log(id);
         options.id = id;
         options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
         super(options);

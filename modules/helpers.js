@@ -62,6 +62,21 @@ $helpers.kebabToCamelCase = function (string) {
 /**
  * @public
  * @description
+ * Remove all children of the parent node
+ * @param {Node} node
+ */
+$helpers.clearNode = function (node) {
+    let allChildren = [...node.querySelectorAll('*')];
+    if (allChildren.length > 0) {
+        allChildren.forEach((child) => {
+            child.remove();
+        });
+    }
+};
+
+/**
+ * @public
+ * @description
  * Assigns default values for the game objects
  * @param {String} gameElement name of the game element
  * @param {Object} options options defining the element
@@ -171,9 +186,9 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
             options.weaponPower = options.weaponPower ?? 450;
-            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.01;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = 2.0;
+            options.maxHealth = 2000.0;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
@@ -270,7 +285,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             break;
         case 'gameOverWrapper':
             options.id = 'game-over-wrapper';
-            options.class = options.class ?? 'message-group';
+            options.class = options.class ?? 'message-group message-wrapper ';
             break;
         case 'gameOverMessage':
             options.id = 'game-over-message';
@@ -286,6 +301,10 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.id = 'game-over-press-space-bar';
             options.innerHTML = options.innerHTML ?? 'Press Enter to play again';
             options.class = options.class ?? 'text message-text';
+            break;
+        case 'levelIndicatorWrapper':
+            options.id = 'level-indicator-wrapper';
+            options.class = options.class ?? 'message-wrapper text';
             break;
     }
     return options;

@@ -353,6 +353,8 @@ $svgPrivate.displayMessage = function (string, options, gameNode) {
 };
 
 $svg.displayGameOverMessage = function (gameInstance, parentNode) {
+    $helpers.clearNode(parentNode);
+
     gameInstance.gameOverSettings.gameOverWrapper = $helpers.assignDefaultValues('gameOverWrapper', gameInstance.gameOverSettings.gameOverWrapper);
     gameInstance.gameOverSettings.gameOverMessage = $helpers.assignDefaultValues('gameOverMessage', gameInstance.gameOverSettings.gameOver);
     gameInstance.gameOverSettings.gameOverResult = $helpers.assignDefaultValues('gameOverResult', gameInstance.gameOverSettings.gameOverResult);
@@ -368,6 +370,19 @@ $svg.displayGameOverMessage = function (gameInstance, parentNode) {
     gameOverWrapper.appendChild(gameOverResult);
     gameOverWrapper.appendChild(gameOverSpaceBar);
     parentNode.appendChild(gameOverWrapper);
+};
+
+$svg.displayLevelIndicator = function (gameInstance, parentNode) {
+    $helpers.clearNode(parentNode);
+    const levelIndicatorWrapperOptions = $helpers.assignDefaultValues('levelIndicatorWrapper', {});
+    const levelIndicatorWrapperDiv = $svgPrivate.setBasicAttributes('div', levelIndicatorWrapperOptions, false);
+
+    levelIndicatorWrapperDiv.innerHTML = `Level: ${gameInstance.level}`;
+    parentNode.appendChild(levelIndicatorWrapperDiv);
+
+    setTimeout(() => {
+        parentNode.querySelector(`#${levelIndicatorWrapperOptions.id}`)?.remove();
+    }, 2500);
 };
 
 export default $svg;
