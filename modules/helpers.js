@@ -188,7 +188,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.weaponPower = options.weaponPower ?? 450;
             options.weaponReloadTime = options.weaponReloadTime ?? 0.01;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = 2000.0;
+            options.maxHealth = 200.0;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;

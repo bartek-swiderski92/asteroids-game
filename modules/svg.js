@@ -292,7 +292,7 @@ $svg.drawShip = function (gameNode, shipInstance) {
 
     $svgPrivate.drawShipPaths(shipGroupTag, guideGroupTag, shipInstance);
     shipGroupTag.appendChild(guideGroupTag);
-    gameNode.appendChild(shipGroupTag);
+    return shipGroupTag;
 };
 
 $svgPrivate.buildAsteroidDAttribute = function (options) {
@@ -312,7 +312,7 @@ $svgPrivate.buildAsteroidDAttribute = function (options) {
     return coordinates;
 };
 
-$svgPrivate.crateAsteroidsElement = function (options) {
+$svgPrivate.createAsteroidsElement = function (options) {
     options.d = $svgPrivate.buildAsteroidDAttribute(options);
     const pathElement = $svgPrivate.setBasicAttributes('path', options);
 
@@ -322,7 +322,7 @@ $svgPrivate.crateAsteroidsElement = function (options) {
 $svg.drawAsteroid = function (gameNode, asteroidInstance) {
     const asteroidGroupTagOptions = $helpers.assignDefaultValues('asteroidGroupTag', {id: asteroidInstance.groupId}, gameNode, asteroidInstance);
     const asteroidGroupTag = $svgPrivate.setBasicAttributes('g', asteroidGroupTagOptions);
-    const asteroidsElement = $svgPrivate.crateAsteroidsElement(asteroidInstance);
+    const asteroidsElement = $svgPrivate.createAsteroidsElement(asteroidInstance);
 
     //Setting up guide
     let guideCircleOptions = $helpers.assignDefaultValues('asteroidGuide', {}, gameNode, asteroidInstance);
@@ -334,7 +334,7 @@ $svg.drawAsteroid = function (gameNode, asteroidInstance) {
     asteroidInstance.guideOptions = guideCircleOptions;
 
     asteroidGroupTag.appendChild(asteroidsElement);
-    gameNode.appendChild(asteroidGroupTag);
+    return asteroidGroupTag;
 };
 
 $svg.drawProjectile = function (gameNode, projectileInstance) {
@@ -343,8 +343,8 @@ $svg.drawProjectile = function (gameNode, projectileInstance) {
     projectileClone.cy = 0;
     projectileClone.r = projectileInstance.radius;
 
-    let circle = $svgPrivate.drawCircle(projectileClone);
-    gameNode.appendChild(circle);
+    let projectile = $svgPrivate.drawCircle(projectileClone);
+    return projectile;
 };
 
 $svgPrivate.displayMessage = function (string, options, gameNode) {

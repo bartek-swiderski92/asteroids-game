@@ -116,6 +116,10 @@ export class Game {
                 this.ship.isCompromised = true;
                 asteroid.isColliding = true;
             }
+            if (asteroid.destroyed && !asteroid.massElement.isConnected) {
+                // stuck asteroid
+                asteroid.destroy(this.asteroids, true);
+            }
             asteroid.update(elapsed);
         }, this);
 
@@ -126,7 +130,7 @@ export class Game {
             } else {
                 this.asteroids.forEach((asteroid) => {
                     //TODO Add collision lines between projectiles and asteroids (needs refactor due to multiple ids)
-                    if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false) {
+                    if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
                     }
@@ -246,6 +250,7 @@ export class Mass {
         this.fill = options.fill;
         this.guide = options.guide;
 
+        this.isUntouchable = true;
         this.x = options.x;
         this.y = options.y;
         this.mass = options.mass;
@@ -301,14 +306,11 @@ export class Mass {
         return Math.atan2(this.ySpeed, this.xSpeed);
     }
 
-    animateElement() {
-        if (this.massElement == undefined) {
-            // console.log('if');
-            this.massElement = document.querySelector(`#${this.groupId || this.id}`);
+    animateElement(firstFrame = false) {
+        if (firstFrame) {
+            this.isUntouchable = false;
         }
-        if (this.class === 'asteroid') {
-            console.log(this.massElement);
-        }
+
         this.massElement.setAttribute('style', `transform: translate(${this.x}px, ${this.y}px) rotate(${this.rotateValue}rad)`);
     }
 }
@@ -339,13 +341,19 @@ export class Ship extends Mass {
         this.maxHealth = options.maxHealth;
         this.health = this.maxHealth;
 
-        $svg.drawShip(gameNode, this);
-        this.animateElement();
+        this.draw();
+        this.animateElement(true);
+
         this.groupTagElement = document.getElementById(this.shipGroupOptions.id);
         this.guideGroupTagElement = document.getElementById(this.shipGuideGroupOptions.id);
         this.guideCircleElement = this.guideGroupTagElement.querySelector('circle');
         this.flameElement = document.getElementById(this.shipFlameOptions.id);
         $svg.transformHealthBar(this);
+    }
+
+    draw() {
+        gameNode.appendChild($svg.drawShip(gameNode, this));
+        this.massElement = gameNode.lastChild;
     }
 
     switchThruster() {
@@ -379,6 +387,7 @@ export class Ship extends Mass {
         let projectile = new Projectile(`projectile-${projectileCount}`, this);
         projectile.push(this.rotateValue, this.weaponPower, elapsed);
         projectile.draw();
+        projectile.animateElement(true);
         this.loaded = false;
         this.timeUntilReloaded = this.weaponReloadTime;
         return projectile;
@@ -409,7 +418,7 @@ export class Asteroid extends Mass {
             this.shape.push(2 * Math.random() - 0.5);
         }
         this.draw();
-        this.animateElement();
+        this.animateElement(true);
         this.guideElement = document.getElementById(this.guideOptions.id);
         this.guideCircleElement = this.guideElement.querySelector('circle');
 
@@ -417,7 +426,9 @@ export class Asteroid extends Mass {
     }
 
     draw() {
-        $svg.drawAsteroid(gameNode, this);
+        const asteroidNode = $svg.drawAsteroid(gameNode, this);
+        gameNode.appendChild(asteroidNode);
+        this.massElement = gameNode.lastChild;
     }
 
     update(elapsed) {
@@ -453,13 +464,15 @@ export class Asteroid extends Mass {
         return asteroid;
     }
 
-    destroy(asteroidsArray) {
-        this.destroyed = true;
-        const asteroidsNode = gameNode.getElementById(`group-tag-${this.id}`);
-        const collisionLine = gameNode.getElementById(`${this.id}-ship`);
-        if (asteroidsNode != undefined) {
-            asteroidsNode.remove();
+    destroy(asteroidsArray, forceRemove = false) {
+        if (forceRemove) {
+            console.log('stuck');
+            let stuckNode = document.querySelector(`[id*="${this.id}"]`);
+            stuckNode.remove();
         }
+        this.destroyed = true;
+        const collisionLine = gameNode.getElementById(`${this.id}-ship`);
+        this.massElement.remove();
         if (collisionLine != undefined) {
             collisionLine.remove();
         }
@@ -485,7 +498,8 @@ export class Projectile extends Mass {
     }
 
     draw() {
-        $svg.drawProjectile(gameNode, this);
+        gameNode.appendChild($svg.drawProjectile(gameNode, this));
+        this.massElement = gameNode.lastChild;
     }
 
     update(elapsed) {
