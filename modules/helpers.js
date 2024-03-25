@@ -182,13 +182,13 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.initialY = 0;
             options.x = options.x ?? gameNode.clientWidth / 2;
             options.y = options.y ?? gameNode.clientHeight / 2;
-            options.mass = options.mass ?? 10;
-            options.radius = options.radius ?? 50;
+            options.mass = options.mass ?? 8;
+            options.radius = options.radius ?? 15;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
             options.weaponPower = options.weaponPower ?? 450;
             options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = 5.0;
+            options.maxHealth = 3.0;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
@@ -253,8 +253,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = options.x ?? Math.random() * gameNode.clientWidth;
             options.y = options.y ?? Math.random() * gameNode.clientHeight;
             options.density = options.density ?? 1;
-            options.mass = options.mass ?? 5000;
-            options.pushForce = options.pushForce ?? 8000000;
+            options.mass = options.mass ?? 15000;
+            options.pushForce = options.pushForce ?? 14000000;
             options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
             options.noise = options.noise ?? 0.5; // 0.75
             options.guide = options.guide ?? false;
@@ -281,10 +281,10 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.lineWidth = options.lineWidth ?? 3;
             options.stroke = options.stroke ?? 'yellow';
             options.fill = options.fill ?? 'red';
-            options.density = options.density ?? 0.001;
-            options.mass = options.mass ?? 0.025;
+            options.density = options.density ?? 0.005;
+            options.mass = options.mass ?? 0.01;
             options.radius = Math.sqrt(options.mass / options.density / Math.PI);
-            options.lifetime = options.lifetime ?? 6;
+            options.lifetime = options.lifetime ?? 2;
             options.life = options.life ?? 1.0;
             break;
         case 'collisionLine':
