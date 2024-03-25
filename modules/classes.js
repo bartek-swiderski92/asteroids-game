@@ -2,7 +2,7 @@
 import $svg from '../modules/svg.js';
 import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
-const textOverlay = document.querySelector('#text-overlay');
+const textOverlayNode = document.querySelector('#text-overlay');
 
 export class Game {
     constructor(options = {}) {
@@ -80,7 +80,6 @@ export class Game {
     movingAsteroid(index, elapsed) {
         let asteroid = new Asteroid(`asteroid-${index}`, {guide: this.guide});
         this.asteroidCount++;
-        // console.log(this.asteroidCount);
         this.pushAsteroid(asteroid, elapsed);
         return asteroid;
     }
@@ -112,7 +111,7 @@ export class Game {
                 this.drawCollisionLine(asteroid, this.ship);
             }
             asteroid.isColliding = false;
-            if (this.areColliding(asteroid, this.ship)) {
+            if (this.areColliding(asteroid, this.ship) && !this.ship.isUntouchable) {
                 this.ship.isCompromised = true;
                 asteroid.isColliding = true;
             }
@@ -206,12 +205,13 @@ export class Game {
         this.ship.xSpeed = 0;
         this.ship.ySpeed = 0;
         this.ship.rotationSpeed = 0;
-        $svg.displayGameOverMessage(this, textOverlay);
+        $svg.displayGameOverMessage(this, textOverlayNode);
     }
     resetGame() {
         const svgClearArray = [...document.querySelectorAll('.asteroid-group-tag'), ...document.querySelectorAll('.collision-line'), ...document.querySelectorAll('.projectile'), document.querySelector('.message-group')];
         svgClearArray.forEach((node) => node?.remove());
         this.level = 1;
+        this.shieldTimeout = 3000;
         this.displayLevelIndicator();
         this.gameOver = false;
         this.guide = false;
@@ -219,6 +219,7 @@ export class Game {
         this.score = 0;
         this.updateScore(0);
         this.ship = new Ship(this.options);
+        this.ship.makeUntouchable(this.shieldTimeout);
         $svg.transformHealthBar(this);
 
         this.projectiles = [];
@@ -226,12 +227,11 @@ export class Game {
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
             this.asteroids.push(this.movingAsteroid(i));
-            // console.log(this.asteroidCount);
         }
     }
 
     displayLevelIndicator() {
-        $svg.displayLevelIndicator(this, textOverlay);
+        $svg.displayLevelIndicator(this, textOverlayNode, this.shieldTimeout);
     }
 
     levelUp() {
@@ -239,6 +239,9 @@ export class Game {
         for (let i = 0; i < this.asteroidStartCount + this.level; i++) {
             this.asteroids.push(this.movingAsteroid(this.asteroidCount + 1));
         }
+
+        this.ship.makeUntouchable(this.shieldTimeout);
+        this.displayLevelIndicator();
     }
 }
 export class Mass {
@@ -266,9 +269,6 @@ export class Mass {
     }
 
     update(elapsed) {
-        // if (this.class === 'asteroid') {
-        //     console.log(this);
-        // }
         this.x += this.xSpeed * elapsed;
         this.y += this.ySpeed * elapsed;
         this.rotateValue += this.rotationSpeed * elapsed;
@@ -354,6 +354,7 @@ export class Ship extends Mass {
     draw() {
         gameNode.appendChild($svg.drawShip(gameNode, this));
         this.massElement = gameNode.lastChild;
+        this.shieldElement = document.getElementById(this.shipShieldOptions.id);
     }
 
     switchThruster() {
@@ -393,6 +394,16 @@ export class Ship extends Mass {
         return projectile;
     }
 
+    makeUntouchable(timeout) {
+        this.isUntouchable = true;
+        this.shieldElement.setAttribute('display', 'inline');
+
+        setTimeout(() => {
+            this.isUntouchable = false;
+            this.shieldElement.setAttribute('display', 'none');
+        }, timeout);
+    }
+
     switchGuide(guide) {
         this.guide = guide;
         this.guideGroupTagElement.setAttribute('display', this.guide ? 'inline' : 'none');
@@ -401,7 +412,6 @@ export class Ship extends Mass {
 
 export class Asteroid extends Mass {
     constructor(id, options = {}) {
-        // console.log(id);
         options.id = id;
         options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
         super(options);
@@ -466,7 +476,7 @@ export class Asteroid extends Mass {
 
     destroy(asteroidsArray, forceRemove = false) {
         if (forceRemove) {
-            console.log('stuck');
+            console.warn('Asteroid got stuck');
             let stuckNode = document.querySelector(`[id*="${this.id}"]`);
             stuckNode.remove();
         }

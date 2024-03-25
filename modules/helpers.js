@@ -186,9 +186,9 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.radius = options.radius ?? 50;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
             options.weaponPower = options.weaponPower ?? 450;
-            options.weaponReloadTime = options.weaponReloadTime ?? 0.01;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = 200.0;
+            options.maxHealth = 5.0;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
@@ -226,6 +226,15 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.stroke = options.stroke ?? 'white';
             options.collisionStroke = options.collisionStroke ?? 'red';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
+            break;
+        case 'shipShieldOptions':
+            options.id = 'ship-shield';
+            options.cx = globalOptions.initialX;
+            options.cy = globalOptions.initialY;
+            options.r = options.r ?? globalOptions.radius;
+            options.stroke = options.stroke ?? 'blue';
+            options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
+            options.display = 'none';
             break;
         case 'guideWaypoints':
             options.fill = 'white';

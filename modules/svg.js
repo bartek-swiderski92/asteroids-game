@@ -270,6 +270,11 @@ $svgPrivate.drawShipGuide = function (groupTag, options) {
     groupTag.appendChild(guideCircle);
 };
 
+$svgPrivate.drawShipShield = function (shipGroupTag, options) {
+    let shieldCircle = $svgPrivate.drawCircle(options);
+    shipGroupTag.appendChild(shieldCircle);
+};
+
 /**
  * @public
  * @description
@@ -279,7 +284,7 @@ $svgPrivate.drawShipGuide = function (groupTag, options) {
  * @returns void
  */
 $svg.drawShip = function (gameNode, shipInstance) {
-    const nestedOptionsObjects = ['shipGroupOptions', 'shipFlameOptions', 'shipGuideOptions', 'shipGuideGroupOptions'];
+    const nestedOptionsObjects = ['shipGroupOptions', 'shipFlameOptions', 'shipGuideOptions', 'shipGuideGroupOptions', 'shipShieldOptions'];
     nestedOptionsObjects.forEach((optionObject) => {
         shipInstance[optionObject] = $helpers.assignDefaultValues(optionObject, shipInstance[optionObject], gameNode, shipInstance);
     });
@@ -289,6 +294,7 @@ $svg.drawShip = function (gameNode, shipInstance) {
 
     const guideGroupTag = $svgPrivate.setBasicAttributes('g', shipInstance.shipGuideGroupOptions);
     $svgPrivate.drawShipGuide(guideGroupTag, shipInstance.shipGuideOptions);
+    $svgPrivate.drawShipShield(shipGroupTag, shipInstance.shipShieldOptions);
 
     $svgPrivate.drawShipPaths(shipGroupTag, guideGroupTag, shipInstance);
     shipGroupTag.appendChild(guideGroupTag);
@@ -372,17 +378,17 @@ $svg.displayGameOverMessage = function (gameInstance, parentNode) {
     parentNode.appendChild(gameOverWrapper);
 };
 
-$svg.displayLevelIndicator = function (gameInstance, parentNode) {
+$svg.displayLevelIndicator = function (gameInstance, parentNode, timeout) {
     $helpers.clearNode(parentNode);
     const levelIndicatorWrapperOptions = $helpers.assignDefaultValues('levelIndicatorWrapper', {});
     const levelIndicatorWrapperDiv = $svgPrivate.setBasicAttributes('div', levelIndicatorWrapperOptions, false);
 
-    levelIndicatorWrapperDiv.innerHTML = `Level: ${gameInstance.level}`;
+    levelIndicatorWrapperDiv.innerHTML = `Level ${gameInstance.level}`;
     parentNode.appendChild(levelIndicatorWrapperDiv);
 
     setTimeout(() => {
         parentNode.querySelector(`#${levelIndicatorWrapperOptions.id}`)?.remove();
-    }, 2500);
+    }, timeout);
 };
 
 export default $svg;
