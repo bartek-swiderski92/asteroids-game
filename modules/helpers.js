@@ -223,7 +223,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.cx = globalOptions.initialX;
             options.cy = globalOptions.initialY;
             options.r = options.r ?? globalOptions.radius;
-            options.stroke = options.stroke ?? 'white';
+            options.stroke = options.stroke ?? 'rgba(255, 255, 255, 0.6)';
             options.collisionStroke = options.collisionStroke ?? 'red';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
             break;
@@ -265,7 +265,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'asteroidGuide':
             options.id = `guide-${globalOptions.id}`;
             options.class = 'asteroid-guide';
-            options.stroke = options.stroke ?? 'white';
+            options.stroke = options.stroke ?? 'rgba(255, 255, 255, 0.6)';
             options.collisionStroke = options.collisionStroke ?? 'red';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
             options.cx = 0;
@@ -290,7 +290,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
         case 'collisionLine':
             options.class = 'collision-line';
             options.lineWidth = options.lineWidth ?? 0.5;
-            options.stroke = options.stroke ?? 'white';
+            options.stroke = options.stroke ?? 'rgba(255, 255, 255, 0.6)';
             break;
         case 'gameOverWrapper':
             options.id = 'game-over-wrapper';
