@@ -114,7 +114,7 @@ $svg.transformHealthBar = function (shipInstance) {
     const maxHpBarEl = document.getElementById('max-hp-bar');
     const currentHpTextEl = document.getElementById('current-hp-text');
     const maxHpWidth = maxHpBarEl?.getAttribute('width') - 2 * maxHpBarEl?.getAttribute('stroke-width');
-    currentHpTextEl.innerHTML = `${parseInt(shipInstance.health * 100)}/${parseInt(shipInstance.maxHealth * 100)}`;
+    currentHpTextEl.innerHTML = `${parseInt(shipInstance.health)}/${parseInt(shipInstance.maxHealth)}`;
 
     let calculatedHpBarWidth = (maxHpWidth * shipInstance.health) / shipInstance.maxHealth;
     currentHpBarEl?.setAttribute('width', isFinite(calculatedHpBarWidth) ? calculatedHpBarWidth : maxHpWidth);

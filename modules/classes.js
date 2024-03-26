@@ -242,8 +242,8 @@ export class Game {
 
         this.ship.makeUntouchable(this.shieldTimeout);
         this.displayLevelIndicator();
-        this.ship.maxHealth *= 1.1;
-        this.ship.health = Math.min(this.ship.health * 1.2, this.ship.maxHealth);
+        this.ship.maxHealth += this.ship.maxHealthIncrease;
+        this.ship.health = Math.min(this.ship.health + this.ship.maxHealthIncrease * 2, this.ship.maxHealth);
         $svg.transformHealthBar(this.ship);
     }
 }
@@ -342,6 +342,7 @@ export class Ship extends Mass {
         this.leftThrusterOn = false;
         this.isCompromised = false;
         this.maxHealth = options.maxHealth;
+        this.maxHealthIncrease = options.maxHealthIncrease;
         this.health = this.maxHealth;
 
         this.draw();
@@ -381,7 +382,7 @@ export class Ship extends Mass {
         this.push(this.rotateValue, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         if (this.isCompromised) {
-            this.health -= Math.min(elapsed, this.health);
+            this.health -= Math.min(elapsed * 100, this.health);
             $svg.transformHealthBar(this);
         }
         Mass.prototype.update.apply(this, arguments);

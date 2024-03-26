@@ -129,7 +129,6 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.y = globalOptions.maxHpBar.y + globalOptions.maxHpBar.strokeWidth;
             break;
         case 'currentHpText':
-            console.log('now');
             options.id = 'current-hp-text';
             options.class = 'text standard-text';
             options.innerHTML = `30/30`;
@@ -193,10 +192,11 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.mass = options.mass ?? 8;
             options.radius = options.radius ?? 15;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.weaponPower = options.weaponPower ?? 450;
-            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
+            options.weaponPower = options.weaponPower ?? 4500;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.05;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = 3.0;
+            options.maxHealth = options.maxHealth ?? 300;
+            options.maxHealthIncrease = options.maxHealthIncrease ?? options.maxHealth * 0.1;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
             options.lineWidth = options.lineWidth ?? 0.5;
