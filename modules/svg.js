@@ -4,7 +4,7 @@ import $helpers from '../modules/helpers.js';
 const $svg = {};
 const $svgPrivate = {};
 
-$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy', 'display', 'x', 'y', 'height', 'width', 'innerHTML'];
+$svgPrivate.allowedAttributes = ['id', 'class', 'd', 'fill', 'stroke', 'strokeWidth', 'r', 'cx', 'cy', 'display', 'x', 'y', 'height', 'width', 'innerHTML', 'textAnchor'];
 
 $svgPrivate.drawCircle = function (options = {}) {
     let circle = $svgPrivate.setBasicAttributes('circle', options);
@@ -75,6 +75,10 @@ $svgPrivate.drawHealthBar = function (options) {
     return groupHpTag;
 };
 
+$svgPrivate.drawLevel = function (options) {
+    const levelElement = $svgPrivate.setBasicAttributes('text', options.currentLevel);
+    return levelElement;
+};
 $svgPrivate.drawScore = function (options) {
     const groupScoreTag = $svgPrivate.setBasicAttributes('g', options.groupScoreTag);
 
@@ -100,10 +104,12 @@ $svgPrivate.drawFps = function (options) {
 
 $svg.drawUI = function (UIOptions, gameNode) {
     const hpBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
+    const level = $svgPrivate.drawLevel(UIOptions.level, gameNode);
     const score = $svgPrivate.drawScore(UIOptions.score);
     const fps = $svgPrivate.drawFps(UIOptions.fps);
 
     gameNode.appendChild(hpBar);
+    gameNode.appendChild(level);
     gameNode.appendChild(score);
     gameNode.appendChild(fps);
 };
@@ -384,10 +390,13 @@ $svg.displayGameOverMessage = function (gameInstance, parentNode) {
 
 $svg.displayLevelIndicator = function (gameInstance, parentNode, timeout) {
     $helpers.clearNode(parentNode);
+    const levelString = `Level: ${gameInstance.level}`;
+    const displayLevelIndicator = document.getElementById('current-level');
+    displayLevelIndicator.innerHTML = levelString;
     const levelIndicatorWrapperOptions = $helpers.assignDefaultValues('levelIndicatorWrapper', {});
     const levelIndicatorWrapperDiv = $svgPrivate.setBasicAttributes('div', levelIndicatorWrapperOptions, false);
 
-    levelIndicatorWrapperDiv.innerHTML = `Level ${gameInstance.level}`;
+    levelIndicatorWrapperDiv.innerHTML = levelString;
     parentNode.appendChild(levelIndicatorWrapperDiv);
 
     setTimeout(() => {

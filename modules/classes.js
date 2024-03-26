@@ -38,6 +38,12 @@ export class Game {
             this.UI.hpBar[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.hpBar[optionObject], gameNode, this.UI.hpBar);
         });
 
+        this.UI.level = this.UI.level ?? {};
+        const levelNestedOptions = ['currentLevel'];
+        levelNestedOptions.forEach((optionObject) => {
+            this.UI.level[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.level[optionObject], gameNode, this.UI.level);
+        });
+
         this.UI.score = this.UI.score ?? {};
         const scoreNestedOptions = ['groupScoreTag', 'scoreLabel', 'currentScore'];
         scoreNestedOptions.forEach((optionObject) => {

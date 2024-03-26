@@ -135,6 +135,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.width + 10;
             options.y = globalOptions.hpText.y;
             break;
+        case 'currentLevel':
+            options.id = 'current-level';
+            options.class = 'text standard-text';
+            options.innerHTML = `Level: 1`;
+            options.x = gameNode.clientWidth / 2;
+            options.y = 20;
+            options.textAnchor = 'middle';
+            break;
         case 'groupScoreTag':
             options.id = 'group-score-tag';
             break;
