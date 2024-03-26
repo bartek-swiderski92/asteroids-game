@@ -8,15 +8,22 @@ $helpers.handleKeyPress = function (event, value, game) {
         switch (event.key || event.keyCode) {
             case 'ArrowUp':
             case 38:
-                game.ship.thrusterOn = value;
+                if (game.ship.trusterOn != value) {
+                    game.ship.thrusterOn = value;
+                    game.ship.switchThruster(value);
+                }
                 break;
             case 'ArrowLeft':
             case 37:
-                game.ship.leftThrusterOn = value;
+                if (game.ship.leftThrusterOn != value) {
+                    game.ship.leftThrusterOn = value;
+                }
                 break;
             case 'ArrowRight':
             case 39:
-                game.ship.rightThrusterOn = value;
+                if (game.ship.rightThrusterOn != value) {
+                    game.ship.rightThrusterOn = value;
+                }
                 break;
             case 'ArrowDown':
             case 40:

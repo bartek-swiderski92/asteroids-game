@@ -367,9 +367,8 @@ export class Ship extends Mass {
         this.shieldElement = document.getElementById(this.shipShieldOptions.id);
     }
 
-    switchThruster() {
-        //TODO Add flag to improve performance
-        this.flameElement.setAttribute('display', this.thrusterOn ? 'inline' : 'none');
+    switchThruster(value) {
+        this.flameElement.setAttribute('display', value ? 'inline' : 'none');
     }
 
     update(elapsed) {
@@ -384,7 +383,6 @@ export class Ship extends Mass {
                 this.guideCircleElement.setAttribute('stroke', this.shipGuideOptions.stroke);
             }
         }
-        this.switchThruster();
         this.push(this.rotateValue, this.thrusterOn * this.thrusterPower, elapsed);
         this.twist((this.rightThrusterOn - this.leftThrusterOn) * this.steeringPower, elapsed);
         if (this.isCompromised) {
