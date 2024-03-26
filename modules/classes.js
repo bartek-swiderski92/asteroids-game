@@ -200,16 +200,11 @@ export class Game {
                 this.asteroids.forEach((asteroid) => {
                     //TODO Add collision lines between projectiles and asteroids (needs refactor due to multiple ids)
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
-                        let explosionSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'explodeAsteroid1' : 'explodeAsteroid2';
-                        this.soundEffects[explosionSound].currentTime = 0;
-                        this.soundEffects[explosionSound].play();
-                        this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
                         if (this.playSoundtrackTempo > 0.2) {
                             this.playSoundtrackTempo = this.playSoundtrackTempo - Math.pow(this.asteroidStartCount + this.level, 2) / 2000;
                         }
-                        console.log(this.playSoundtrackTempo);
                         this.explosions.push(new Explosion(asteroid));
                     }
                 }, this);
@@ -262,6 +257,11 @@ export class Game {
 
     splitAsteroid(asteroid, elapsed) {
         asteroid.mass -= this.massDestroyed;
+
+        let explosionSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'explodeAsteroid1' : 'explodeAsteroid2';
+        this.soundEffects[explosionSound].currentTime = 0;
+        this.soundEffects[explosionSound].play();
+
         this.updateScore(this.massDestroyed);
 
         const split = 0.25 + 0.5 * Math.random();
@@ -627,10 +627,7 @@ export class Projectile extends Mass {
 
     destroy(projectilesArray) {
         this.destroyed = true;
-        const projectileNode = gameNode.getElementById(this.id);
-        if (projectileNode != undefined) {
-            projectileNode.remove();
-        }
+        this.massElement.remove();
         const projectileIndex = projectilesArray.findIndex((projectile) => projectile.id === this.id);
         projectilesArray.splice(projectileIndex, 1);
     }
