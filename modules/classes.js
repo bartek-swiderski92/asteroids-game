@@ -104,7 +104,7 @@ export class Game {
         this.ship.isCompromised = false;
 
         if (this.asteroids.length === 0) {
-            this.levelUp(elapsed);
+            this.levelUp();
         }
         this.asteroids.forEach((asteroid) => {
             if (this.guide) {
@@ -220,7 +220,7 @@ export class Game {
         this.updateScore(0);
         this.ship = new Ship(this.options);
         this.ship.makeUntouchable(this.shieldTimeout);
-        $svg.transformHealthBar(this);
+        $svg.transformHealthBar(this.ship);
 
         this.projectiles = [];
         this.asteroids = [];
@@ -242,6 +242,9 @@ export class Game {
 
         this.ship.makeUntouchable(this.shieldTimeout);
         this.displayLevelIndicator();
+        this.ship.maxHealth *= 1.1;
+        this.ship.health = Math.min(this.ship.health * 1.2, this.ship.maxHealth);
+        $svg.transformHealthBar(this.ship);
     }
 }
 export class Mass {
