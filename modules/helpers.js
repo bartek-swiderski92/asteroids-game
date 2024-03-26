@@ -6,6 +6,12 @@ $helpers.getRandomNumber = function (min, max) {
     return Math.random() * (max - min + 1) + min;
 };
 
+$helpers.playRandomSound = function (soundObject, soundArray) {
+    let sound = soundArray[Math.floor($helpers.getRandomNumber(0, soundArray.length - 1))];
+    soundObject[sound].currentTime = 0;
+    soundObject[sound].play();
+};
+
 $helpers.handleKeyPress = function (event, value, game) {
     let keyPressed = event.key || event.keyCode;
     if (game.gameOver === false) {

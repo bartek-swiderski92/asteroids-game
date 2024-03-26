@@ -230,9 +230,9 @@ export class Game {
         this.ship.update(elapsed);
         if (this.ship.trigger && this.ship.loaded) {
             this.projectileCount++;
-            let fireSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'fire1' : 'fire2';
-            this.soundEffects[fireSound].currentTime = 0;
-            this.soundEffects[fireSound].play();
+
+            $helpers.playRandomSound(this.soundEffects, ['fire1', 'fire2']);
+
             this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
         }
     }
@@ -258,9 +258,7 @@ export class Game {
     splitAsteroid(asteroid, elapsed) {
         asteroid.mass -= this.massDestroyed;
 
-        let explosionSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'explodeAsteroid1' : 'explodeAsteroid2';
-        this.soundEffects[explosionSound].currentTime = 0;
-        this.soundEffects[explosionSound].play();
+        $helpers.playRandomSound(this.soundEffects, ['explodeAsteroid1', 'explodeAsteroid2']);
 
         this.updateScore(this.massDestroyed);
 
