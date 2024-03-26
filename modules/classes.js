@@ -19,6 +19,13 @@ export class Game {
         this.gridElement = document.getElementById('grid');
         this.populateUiSettings();
         this.drawUI();
+
+        //sound
+        this.setSoundEffects();
+        this.soundTrackProgress = 0;
+        this.playSoundtrackTempo = 1.2;
+        this.lastPlayedSound = undefined;
+
         this.resetGame();
         this.gameOverSettings = options.gameOverSettings ?? {};
         this.currentFps = 0;
@@ -62,6 +69,26 @@ export class Game {
 
     drawUI() {
         $svg.drawUI(this.UI, gameNode);
+    }
+
+    setSoundEffects() {
+        this.soundEffects = {
+            fire1: new Audio('sfx/fire.wav'),
+            fire2: new Audio('sfx/sfire.wav'),
+            explodeShip: new Audio('sfx/explode1.wav'),
+            explodeAsteroid1: new Audio('sfx/explode2.wav'),
+            explodeAsteroid2: new Audio('sfx/explode3.wav'),
+            collision: new Audio('sfx/life.wav'),
+            thrust: new Audio('sfx/thrust.wav'),
+            thumphi: new Audio('sfx/thumphi.wav'),
+            thumplo: new Audio('sfx/thumplo.wav')
+        };
+
+        this.soundEffects.fire1.volume = 0.3;
+        this.soundEffects.fire2.volume = 0.3;
+        this.soundEffects.collision.volume = 0.3;
+        this.soundEffects.thumphi.volume = 0.5;
+        this.soundEffects.thumplo.volume = 0.5;
     }
 
     switchGuide() {
@@ -109,6 +136,20 @@ export class Game {
         window.requestAnimationFrame(this.frame.bind(this));
     }
 
+    playSoundtrack(elapsed) {
+        this.soundTrackProgress += elapsed;
+        if (this.soundTrackProgress >= this.playSoundtrackTempo) {
+            this.soundTrackProgress = 0;
+            if (this.lastPlayedSound === 'thumplo' || this.lastPlayedSound == undefined) {
+                this.soundEffects.thumphi.play();
+                this.lastPlayedSound = 'tumphi';
+            } else {
+                this.soundEffects.thumplo.play();
+                this.lastPlayedSound = 'thumplo';
+            }
+        }
+    }
+
     update(elapsed) {
         if (this.isGamePaused) {
             return;
@@ -118,6 +159,7 @@ export class Game {
         if (this.asteroids.length === 0) {
             this.levelUp();
         }
+
         this.asteroids.forEach((asteroid) => {
             if (this.guide) {
                 this.drawCollisionLine(asteroid, this.ship);
@@ -125,6 +167,7 @@ export class Game {
             asteroid.isColliding = false;
             if (this.areColliding(asteroid, this.ship) && !this.ship.isUntouchable) {
                 this.ship.isCompromised = true;
+
                 asteroid.isColliding = true;
             }
             if (asteroid.destroyed && !asteroid.massElement.isConnected) {
@@ -133,7 +176,22 @@ export class Game {
             }
             asteroid.update(elapsed);
         }, this);
+        if (!this.gameOver) {
+            this.playSoundtrack(elapsed);
+            if (this.ship.isCompromised) {
+                this.soundEffects.collision.play();
+            } else {
+                this.soundEffects.collision.currentTime = 0;
+                this.soundEffects.collision.pause();
+            }
 
+            if (this.ship.thrusterOn) {
+                this.soundEffects.thrust.play();
+            } else {
+                this.soundEffects.thrust.currentTime = 0;
+                this.soundEffects.thrust.pause();
+            }
+        }
         this.projectiles.forEach((projectile) => {
             projectile.update(elapsed);
             if (projectile.life <= 0 && projectile.destroyed === false) {
@@ -142,9 +200,16 @@ export class Game {
                 this.asteroids.forEach((asteroid) => {
                     //TODO Add collision lines between projectiles and asteroids (needs refactor due to multiple ids)
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
+                        let explosionSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'explodeAsteroid1' : 'explodeAsteroid2';
+                        this.soundEffects[explosionSound].currentTime = 0;
+                        this.soundEffects[explosionSound].play();
+                        this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
-
+                        if (this.playSoundtrackTempo > 0.2) {
+                            this.playSoundtrackTempo = this.playSoundtrackTempo - Math.pow(this.asteroidStartCount + this.level, 2) / 2000;
+                        }
+                        console.log(this.playSoundtrackTempo);
                         this.explosions.push(new Explosion(asteroid));
                     }
                 }, this);
@@ -159,12 +224,20 @@ export class Game {
         }, this);
 
         if (this.ship.health <= 0 && this.gameOver === false) {
+            this.soundEffects.collision.pause();
+            this.soundEffects.collision.currentTime = 0;
+            this.soundEffects.explodeShip.play();
+
             this.endGame();
+
             return;
         }
         this.ship.update(elapsed);
         if (this.ship.trigger && this.ship.loaded) {
             this.projectileCount++;
+            let fireSound = Math.floor($helpers.getRandomNumber(1, 2)) === 1 ? 'fire1' : 'fire2';
+            this.soundEffects[fireSound].currentTime = 0;
+            this.soundEffects[fireSound].play();
             this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
         }
     }
@@ -258,10 +331,11 @@ export class Game {
     }
 
     levelUp() {
-        this.level += 1;
+        this.playSoundtrackTempo = 1.2;
         for (let i = 0; i < this.asteroidStartCount + this.level; i++) {
             this.asteroids.push(this.movingAsteroid(this.asteroidCount + 1));
         }
+        this.level += 1;
 
         this.ship.makeUntouchable(this.shieldTimeout);
         this.displayLevelIndicator();
