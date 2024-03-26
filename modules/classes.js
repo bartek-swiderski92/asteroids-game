@@ -11,7 +11,7 @@ export class Game {
         this.drawGrid();
         this.projectileCount = 0;
         this.asteroidCount = 0;
-        this.asteroidStartCount = options.asteroidStartCount ?? 1;
+        this.asteroidStartCount = options.asteroidStartCount ?? 4;
         this.massDestroyed = 500;
         this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));

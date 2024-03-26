@@ -207,8 +207,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.mass = options.mass ?? 8;
             options.radius = options.radius ?? 15;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.weaponPower = options.weaponPower ?? 4500;
-            options.weaponReloadTime = options.weaponReloadTime ?? 0.05;
+            options.weaponPower = options.weaponPower ?? 450;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
             options.maxHealth = options.maxHealth ?? 300;
             options.maxHealthIncrease = options.maxHealthIncrease ?? options.maxHealth * 0.1;
@@ -276,8 +276,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = options.x ?? Math.random() * gameNode.clientWidth;
             options.y = options.y ?? Math.random() * gameNode.clientHeight;
             options.density = options.density ?? 1;
-            options.mass = options.mass ?? 1500;
-            options.pushForce = options.pushForce ?? 1400000;
+            options.mass = options.mass ?? 15000;
+            options.pushForce = options.pushForce ?? 12000000;
             options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
             options.noise = options.noise ?? 0.5; // 0.75
             options.guide = options.guide ?? false;
