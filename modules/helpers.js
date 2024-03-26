@@ -3,9 +3,10 @@
 const $helpers = {};
 
 $helpers.handleKeyPress = function (event, value, game) {
-    let nothingHandled;
+    let keyPressed = event.key || event.keyCode;
     if (game.gameOver === false) {
-        switch (event.key || event.keyCode) {
+        // console.log(event.key, event.keyCode);
+        switch (keyPressed) {
             case 'ArrowUp':
             case 38:
                 if (game.ship.trusterOn != value) {
@@ -35,24 +36,30 @@ $helpers.handleKeyPress = function (event, value, game) {
                 break;
             case 'g':
             case '71':
-                if (value) {
+                if (game.buttonPressed == null) {
+                    game.buttonPressed = keyPressed;
                     game.switchGuide();
+                } else if (!value) {
+                    game.buttonPressed = null;
                 }
                 break;
-            default:
-                nothingHandled = true;
+            case 'Escape':
+            case '27':
+                if (game.buttonPressed == null) {
+                    game.buttonPressed = keyPressed;
+                    game.pauseGame();
+                } else if (!value) {
+                    game.buttonPressed = null;
+                }
+                break;
         }
     } else {
-        switch (event.key || event.keyCode) {
+        switch (keyPressed) {
             case 'Enter':
             case 13:
                 game.resetGame();
                 break;
         }
-    }
-
-    if (nothingHandled) {
-        //    event.preventDefault();
     }
 };
 /**

@@ -3,6 +3,7 @@ import $svg from '../modules/svg.js';
 import $helpers from '../modules/helpers.js';
 const gameNode = document.querySelector('#game');
 const textOverlayNode = document.querySelector('#text-overlay');
+const pauseGameNode = document.querySelector('#game-paused');
 
 export class Game {
     constructor(options = {}) {
@@ -22,7 +23,9 @@ export class Game {
         this.gameOverSettings = options.gameOverSettings ?? {};
         this.currentFps = 0;
         this.fpsCounterElement = document.getElementById('current-fps');
-        // this.endGame();
+        this.buttonPressed = null;
+
+        this.isGamePaused = false;
     }
 
     drawGrid() {
@@ -107,6 +110,9 @@ export class Game {
     }
 
     update(elapsed) {
+        if (this.isGamePaused) {
+            return;
+        }
         this.ship.isCompromised = false;
 
         if (this.asteroids.length === 0) {
@@ -251,6 +257,15 @@ export class Game {
         this.ship.maxHealth += this.ship.maxHealthIncrease;
         this.ship.health = Math.min(this.ship.health + this.ship.maxHealthIncrease * 2, this.ship.maxHealth);
         $svg.transformHealthBar(this.ship);
+    }
+
+    pauseGame() {
+        this.isGamePaused = !this.isGamePaused;
+        if (this.isGamePaused) {
+            pauseGameNode.classList.remove('hide');
+        } else {
+            pauseGameNode.classList.add('hide');
+        }
     }
 }
 export class Mass {
