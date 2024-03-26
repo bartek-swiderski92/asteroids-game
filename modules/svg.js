@@ -59,6 +59,7 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
 $svgPrivate.drawHealthBar = function (options) {
     const groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
     const hpText = $svgPrivate.setBasicAttributes('text', options.hpText);
+    const currentHpText = $svgPrivate.setBasicAttributes('text', options.currentHpText);
 
     const groupHpBar = $svgPrivate.setBasicAttributes('g', options.groupHpBar);
     const maxHpBar = $svgPrivate.setBasicAttributes('rect', options.maxHpBar);
@@ -69,6 +70,7 @@ $svgPrivate.drawHealthBar = function (options) {
 
     groupHpTag.appendChild(hpText);
     groupHpTag.appendChild(groupHpBar);
+    groupHpTag.appendChild(currentHpText);
 
     return groupHpTag;
 };
@@ -110,7 +112,9 @@ $svg.transformHealthBar = function (shipInstance) {
     //TODO removed hardcoded values once settings.json is implemented
     const currentHpBarEl = document.getElementById('current-hp-bar');
     const maxHpBarEl = document.getElementById('max-hp-bar');
+    const currentHpTextEl = document.getElementById('current-hp-text');
     const maxHpWidth = maxHpBarEl?.getAttribute('width') - 2 * maxHpBarEl?.getAttribute('stroke-width');
+    currentHpTextEl.innerHTML = `${parseInt(shipInstance.health * 100)}/${parseInt(shipInstance.maxHealth * 100)}`;
 
     let calculatedHpBarWidth = (maxHpWidth * shipInstance.health) / shipInstance.maxHealth;
     currentHpBarEl?.setAttribute('width', isFinite(calculatedHpBarWidth) ? calculatedHpBarWidth : maxHpWidth);

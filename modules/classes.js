@@ -11,15 +11,15 @@ export class Game {
         this.drawGrid();
         this.projectileCount = 0;
         this.asteroidCount = 0;
-        this.asteroidStartCount = options.asteroidStartCount ?? 4;
+        this.asteroidStartCount = options.asteroidStartCount ?? 1;
         this.massDestroyed = 500;
         this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));
         this.gridElement = document.getElementById('grid');
         this.populateUiSettings();
+        this.drawUI();
         this.resetGame();
         this.gameOverSettings = options.gameOverSettings ?? {};
-        this.drawUI();
         this.currentFps = 0;
         this.fpsCounterElement = document.getElementById('current-fps');
         // this.endGame();
@@ -33,7 +33,7 @@ export class Game {
         this.UI = this.options.UI ?? {};
 
         this.UI.hpBar = this.UI.hpBar ?? {};
-        const hpNestedOptions = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar'];
+        const hpNestedOptions = ['groupHpTag', 'hpText', 'maxHpBar', 'currentHpBar', 'currentHpText'];
         hpNestedOptions.forEach((optionObject) => {
             this.UI.hpBar[optionObject] = $helpers.assignDefaultValues(optionObject, this.UI.hpBar[optionObject], gameNode, this.UI.hpBar);
         });

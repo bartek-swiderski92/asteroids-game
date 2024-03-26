@@ -117,7 +117,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = globalOptions.hpText.x + 25;
             //TODO Below add logic for calculating space for the health bar
             // options.x = globalOptions.hpText.x + globalOptions.hpText.innerHTML.length * 8;
-            options.y = globalOptions.hpText.y - 10;
+            options.y = globalOptions.hpText.y - 11;
             break;
         case 'currentHpBar':
             options.id = 'current-hp-bar';
@@ -127,6 +127,14 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.height = globalOptions.maxHpBar.height - globalOptions.maxHpBar.strokeWidth * 2;
             options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.strokeWidth;
             options.y = globalOptions.maxHpBar.y + globalOptions.maxHpBar.strokeWidth;
+            break;
+        case 'currentHpText':
+            console.log('now');
+            options.id = 'current-hp-text';
+            options.class = 'text standard-text';
+            options.innerHTML = `30/30`;
+            options.x = globalOptions.maxHpBar.x + globalOptions.maxHpBar.width + 10;
+            options.y = globalOptions.hpText.y;
             break;
         case 'groupScoreTag':
             options.id = 'group-score-tag';
@@ -253,8 +261,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.x = options.x ?? Math.random() * gameNode.clientWidth;
             options.y = options.y ?? Math.random() * gameNode.clientHeight;
             options.density = options.density ?? 1;
-            options.mass = options.mass ?? 15000;
-            options.pushForce = options.pushForce ?? 14000000;
+            options.mass = options.mass ?? 1500;
+            options.pushForce = options.pushForce ?? 1400000;
             options.radius = options.radius ?? Math.sqrt(options.mass / options.density / Math.PI);
             options.noise = options.noise ?? 0.5; // 0.75
             options.guide = options.guide ?? false;
