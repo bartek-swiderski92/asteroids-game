@@ -5,6 +5,13 @@ const gameNode = document.querySelector('#game');
 const textOverlayNode = document.querySelector('#text-overlay');
 const pauseGameNode = document.querySelector('#game-paused');
 
+class AsteroidsAudio extends Audio {
+    stop() {
+        this.pause();
+        this.currentTime = 0;
+    }
+}
+
 export class Game {
     constructor(options = {}) {
         this.options = options;
@@ -73,15 +80,15 @@ export class Game {
 
     setSoundEffects() {
         this.soundEffects = {
-            fire1: new Audio('sfx/fire.wav'),
-            fire2: new Audio('sfx/sfire.wav'),
-            explodeShip: new Audio('sfx/explode1.wav'),
-            explodeAsteroid1: new Audio('sfx/explode2.wav'),
-            explodeAsteroid2: new Audio('sfx/explode3.wav'),
-            collision: new Audio('sfx/life.wav'),
-            thrust: new Audio('sfx/thrust.wav'),
-            thumphi: new Audio('sfx/thumphi.wav'),
-            thumplo: new Audio('sfx/thumplo.wav')
+            fire1: new AsteroidsAudio('sfx/fire.wav'),
+            fire2: new AsteroidsAudio('sfx/sfire.wav'),
+            explodeShip: new AsteroidsAudio('sfx/explode1.wav'),
+            explodeAsteroid1: new AsteroidsAudio('sfx/explode2.wav'),
+            explodeAsteroid2: new AsteroidsAudio('sfx/explode3.wav'),
+            collision: new AsteroidsAudio('sfx/life.wav'),
+            thrust: new AsteroidsAudio('sfx/thrust.wav'),
+            thumphi: new AsteroidsAudio('sfx/thumphi.wav'),
+            thumplo: new AsteroidsAudio('sfx/thumplo.wav')
         };
 
         this.soundEffects.fire1.volume = 0.3;
@@ -178,18 +185,17 @@ export class Game {
         }, this);
         if (!this.gameOver) {
             this.playSoundtrack(elapsed);
+
             if (this.ship.isCompromised) {
                 this.soundEffects.collision.play();
-            } else {
-                this.soundEffects.collision.currentTime = 0;
-                this.soundEffects.collision.pause();
+            } else if (!this.soundEffects.collision.paused) {
+                this.soundEffects.collision.stop();
             }
 
             if (this.ship.thrusterOn) {
                 this.soundEffects.thrust.play();
-            } else {
-                this.soundEffects.thrust.currentTime = 0;
-                this.soundEffects.thrust.pause();
+            } else if (!this.soundEffects.thrust.paused) {
+                this.soundEffects.thrust.stop();
             }
         }
         this.projectiles.forEach((projectile) => {
@@ -219,8 +225,7 @@ export class Game {
         }, this);
 
         if (this.ship.health <= 0 && this.gameOver === false) {
-            this.soundEffects.collision.pause();
-            this.soundEffects.collision.currentTime = 0;
+            this.soundEffects.collision.stop();
             this.soundEffects.explodeShip.play();
 
             this.endGame();
