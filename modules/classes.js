@@ -144,10 +144,20 @@ export class Game {
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
+
+                        this.explosions.push(new Explosion(asteroid));
                     }
                 }, this);
             }
         }, this);
+
+        this.explosions.forEach((explosion) => {
+            explosion.update(elapsed);
+            if (explosion.life <= 0 && explosion.destroyed === false) {
+                explosion.destroy(this.explosions);
+            }
+        }, this);
+
         if (this.ship.health <= 0 && this.gameOver === false) {
             this.endGame();
             return;
@@ -236,6 +246,7 @@ export class Game {
 
         this.projectiles = [];
         this.asteroids = [];
+        this.explosions = [];
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
             this.asteroids.push(this.movingAsteroid(i));
@@ -548,5 +559,59 @@ export class Projectile extends Mass {
         }
         const projectileIndex = projectilesArray.findIndex((projectile) => projectile.id === this.id);
         projectilesArray.splice(projectileIndex, 1);
+    }
+}
+
+export class Explosion {
+    constructor(asteroidInstance = {}, options = {}) {
+        options = options = $helpers.assignDefaultValues('explosionClass', options, gameNode, asteroidInstance);
+        this.id = `${asteroidInstance.id}-explosion`;
+        this.class = options.class;
+        this.originX = asteroidInstance.x;
+        this.originY = asteroidInstance.y;
+        this.explosionElementRadius = Math.max(parseInt(asteroidInstance.radius / 120), 2);
+        this.node = null;
+        this.explosionNumber = Math.max(parseInt(asteroidInstance.radius / 4), 8);
+        this.directionSlice = (Math.PI * 2) / this.explosionNumber;
+        this.lifetime = 1.5;
+        this.life = this.lifetime;
+        this.destroyed = false;
+        this.explosionDistance = 0;
+        this.explosionArray = [];
+        this.draw();
+    }
+
+    draw() {
+        const explosionNode = $svg.drawExplosion(this);
+        gameNode.appendChild(explosionNode);
+        this.node = gameNode.lastChild;
+        [...this.node.children].forEach((child, index) => {
+            let childObject = {
+                node: child,
+                directionX: Math.sin(this.directionSlice * index) * $helpers.getRandomNumber(-0.5, 0.5),
+                directionY: Math.cos(this.directionSlice * index) * $helpers.getRandomNumber(-0.5, 0.5)
+            };
+            this.explosionArray.push(childObject);
+        });
+    }
+
+    update(elapsed) {
+        this.life -= elapsed;
+        this.animate(elapsed);
+    }
+
+    animate(elapsed) {
+        this.explosionArray.forEach((explosion) => {
+            let directionX = explosion.directionX * this.explosionDistance;
+            let directionY = explosion.directionY * this.explosionDistance;
+            explosion.node.setAttribute('style', `transform: translate(${directionX}px, ${directionY}px)`);
+        });
+        this.explosionDistance += elapsed * 35;
+    }
+
+    destroy(explosionArray) {
+        this.node.remove();
+        let index = explosionArray.findIndex((explosion) => (explosion.id = this.id));
+        explosionArray.splice(index, 1);
     }
 }

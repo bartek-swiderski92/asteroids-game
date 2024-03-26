@@ -2,6 +2,10 @@
 
 const $helpers = {};
 
+$helpers.getRandomNumber = function (min, max) {
+    return Math.random() * (max - min + 1) + min;
+};
+
 $helpers.handleKeyPress = function (event, value, game) {
     let keyPressed = event.key || event.keyCode;
     if (game.gameOver === false) {
@@ -316,6 +320,29 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.radius = Math.sqrt(options.mass / options.density / Math.PI);
             options.lifetime = options.lifetime ?? 2;
             options.life = options.life ?? 1.0;
+            break;
+        case 'explosionClass':
+            options.class = 'explosion';
+            options.lineWidth = options.lineWidth ?? 3;
+            options.stroke = options.stroke ?? 'white';
+            options.fill = options.fill ?? 'transparent';
+            options.density = options.density ?? 0.005;
+            options.mass = options.mass ?? 0.01;
+            options.radius = Math.sqrt(options.mass / options.density / Math.PI);
+            options.lifetime = options.lifetime ?? 2;
+            options.life = options.life ?? 1.0;
+            break;
+        case 'explosionGroupTag':
+            options.id = globalOptions.id;
+            break;
+        case 'explosionElement':
+            options.class = 'explosion-element';
+            options.lineWidth = options.lineWidth ?? 1;
+            options.stroke = options.stroke ?? 'white';
+            options.fill = options.fill ?? 'transparent';
+            options.cx = globalOptions.originX;
+            options.cy = globalOptions.originY;
+            options.r = options.r ?? globalOptions.explosionElementRadius;
             break;
         case 'collisionLine':
             options.class = 'collision-line';

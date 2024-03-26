@@ -363,6 +363,17 @@ $svg.drawProjectile = function (gameNode, projectileInstance) {
     return projectile;
 };
 
+$svg.drawExplosion = function (explosionInstance) {
+    const groupTagOptions = $helpers.assignDefaultValues('explosionGroupTag', {}, {}, explosionInstance);
+    const explosionElementOptions = $helpers.assignDefaultValues('explosionElement', {}, {}, explosionInstance);
+    let explosionGroupTag = $svgPrivate.setBasicAttributes('g', groupTagOptions);
+    for (let i = 0; i < explosionInstance.explosionNumber; i++) {
+        let explosionElement = $svgPrivate.setBasicAttributes('circle', explosionElementOptions);
+        explosionGroupTag.appendChild(explosionElement);
+    }
+    return explosionGroupTag;
+};
+
 $svgPrivate.displayMessage = function (string, options, gameNode) {
     const messageNode = $svgPrivate.setBasicAttributes('text', options);
     gameNode.appendChild(messageNode);
