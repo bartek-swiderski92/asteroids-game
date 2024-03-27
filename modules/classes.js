@@ -199,12 +199,16 @@ export class Game {
             }
         }
         this.projectiles.forEach((projectile) => {
+            if (projectile.destroyed) {
+                projectile.destroy(this.projectiles, true);
+            }
+
             projectile.update(elapsed);
+
             if (projectile.life <= 0 && projectile.destroyed === false) {
                 projectile.destroy(this.projectiles);
             } else {
                 this.asteroids.forEach((asteroid) => {
-                    //TODO Add collision lines between projectiles and asteroids (needs refactor due to multiple ids)
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
                         projectile.destroy(this.projectiles);
                         this.splitAsteroid(asteroid, elapsed);
@@ -218,7 +222,12 @@ export class Game {
         }, this);
 
         this.explosions.forEach((explosion) => {
+            if (explosion.destroyed && !explosion.node.isConnected) {
+                explosion.destroy(this.explosions, true);
+            }
+
             explosion.update(elapsed);
+
             if (explosion.life <= 0 && explosion.destroyed === false) {
                 explosion.destroy(this.explosions);
             }
@@ -638,7 +647,12 @@ export class Projectile extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    destroy(projectilesArray) {
+    destroy(projectilesArray, forceDestroy) {
+        if (forceDestroy) {
+            console.warn('Projectile got stuck');
+            let stuckNode = document.querySelector(`#${this.id}`);
+            stuckNode.remove();
+        }
         this.destroyed = true;
         this.massElement.remove();
         const projectileIndex = projectilesArray.findIndex((projectile) => projectile.id === this.id);
@@ -693,9 +707,15 @@ export class Explosion {
         this.explosionDistance += elapsed * 35;
     }
 
-    destroy(explosionArray) {
+    destroy(explosionArray, forceDestroy = false) {
+        if (forceDestroy) {
+            console.warn('Explosion got stuck');
+            let stuckNode = document.querySelector(`#${this.id}`);
+            stuckNode.remove();
+        }
         this.node.remove();
-        let index = explosionArray.findIndex((explosion) => (explosion.id = this.id));
+        this.destroyed = true;
+        let index = explosionArray.findIndex((explosion) => explosion.id === this.id);
         explosionArray.splice(index, 1);
     }
 }
