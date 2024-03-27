@@ -272,7 +272,7 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.cx = globalOptions.initialX;
             options.cy = globalOptions.initialY;
             options.r = options.r ?? globalOptions.radius;
-            options.stroke = options.stroke ?? 'blue';
+            options.stroke = options.stroke ?? 'orange';
             options.fill = options.fill ?? 'rgba(0, 0, 0, .4)';
             options.display = 'none';
             break;
