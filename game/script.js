@@ -19,3 +19,5 @@ const game = new Game();
 
 document.addEventListener('keydown', (event) => $helpers.handleKeyPress(event, true, game));
 document.addEventListener('keyup', (event) => $helpers.handleKeyPress(event, false, game));
+
+window.addEventListener('blur', () => game.pauseGame());

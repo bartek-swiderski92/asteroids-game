@@ -26,13 +26,20 @@ body {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 30%;
+    /* width: 30%; */
     text-align: center;
     transform: translate(-50%, -50%);
-    font-size: 4rem;
     color: white;
     font-family: monospace;
     z-index: 2000;
+}
+
+#game-paused .pause__text {
+    font-size: 4rem;
+    margin-bottom: 150px;
+}
+#game-paused .pause__press-esc {
+    font-size: 2rem;
 }
 
 .message-wrapper {

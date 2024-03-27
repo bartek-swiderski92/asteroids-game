@@ -19,7 +19,7 @@ $helpers.handleKeyPress = function (event, value, game) {
         switch (keyPressed) {
             case 'ArrowUp':
             case 38:
-                if (game.ship.trusterOn != value) {
+                if (game.ship.trusterOn != value && !game.isGamePaused) {
                     game.ship.thrusterOn = value;
                     game.ship.switchThruster(value);
                 }
@@ -57,7 +57,11 @@ $helpers.handleKeyPress = function (event, value, game) {
             case '27':
                 if (game.buttonPressed == null) {
                     game.buttonPressed = keyPressed;
-                    game.pauseGame();
+                    if (game.isGamePaused) {
+                        game.resumeGame();
+                    } else {
+                        game.pauseGame();
+                    }
                 } else if (!value) {
                     game.buttonPressed = null;
                 }

@@ -348,12 +348,14 @@ export class Game {
     }
 
     pauseGame() {
-        this.isGamePaused = !this.isGamePaused;
-        if (this.isGamePaused) {
-            pauseGameNode.classList.remove('hide');
-        } else {
-            pauseGameNode.classList.add('hide');
-        }
+        this.isGamePaused = true;
+        this.ship.disableControls();
+        pauseGameNode.classList.remove('hide');
+    }
+
+    resumeGame() {
+        this.isGamePaused = false;
+        pauseGameNode.classList.add('hide');
     }
 }
 export class Mass {
@@ -518,6 +520,14 @@ export class Ship extends Mass {
     switchGuide(guide) {
         this.guide = guide;
         this.guideGroupTagElement.setAttribute('display', this.guide ? 'inline' : 'none');
+    }
+
+    disableControls() {
+        this.thrusterOn = false;
+        this.leftThrusterOn = false;
+        this.rightThrusterOn = false;
+        this.trigger = false;
+        this.switchThruster(false);
     }
 }
 
