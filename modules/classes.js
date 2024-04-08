@@ -19,7 +19,7 @@ export class Game {
         this.drawGrid();
         this.projectileCount = 0;
         this.asteroidCount = 0;
-        this.asteroidStartCount = options.asteroidStartCount ?? 4;
+        this.asteroidStartCount = options.asteroidStartCount ?? 1;
         this.massDestroyed = 500;
         this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));
@@ -103,7 +103,7 @@ export class Game {
         this.guide = !this.guide;
         this.gridElement.setAttribute('display', this.guide ? 'inline' : 'none');
         this.ship.switchGuide(this.guide);
-        this.asteroids.forEach((asteroid) => asteroid.switchGuide(this.guide));
+        this.asteroidMap.forEach((asteroid) => asteroid.switchGuide(this.guide));
         collisionLines.forEach((line) => line.remove());
     }
 
@@ -120,9 +120,8 @@ export class Game {
         asteroid.twist(Math.random() * 0.5 * Math.PI * asteroid.pushForce * 0.02, elapsed);
     }
 
-    movingAsteroid(index, elapsed) {
-        let asteroid = new Asteroid(`asteroid-${index}`, {guide: this.guide});
-        this.asteroidCount++;
+    movingAsteroid(id, elapsed) {
+        let asteroid = new Asteroid(id, {guide: this.guide});
         this.pushAsteroid(asteroid, elapsed);
         return asteroid;
     }
@@ -163,11 +162,11 @@ export class Game {
         }
         this.ship.isCompromised = false;
 
-        if (this.asteroids.length === 0) {
+        if (this.asteroidMap.size === 0) {
             this.levelUp();
         }
 
-        this.asteroids.forEach((asteroid) => {
+        this.asteroidMap.forEach((asteroid) => {
             if (this.guide) {
                 this.drawCollisionLine(asteroid, this.ship);
             }
@@ -179,7 +178,7 @@ export class Game {
             }
             if (asteroid.destroyed && !asteroid.massElement.isConnected) {
                 // stuck asteroid
-                asteroid.destroy(this.asteroids, true);
+                asteroid.destroy(this.asteroidMap, true);
             }
             asteroid.update(elapsed);
         }, this);
@@ -208,7 +207,7 @@ export class Game {
             if (projectile.life <= 0 && projectile.destroyed === false) {
                 projectile.destroy(this.projectileMap);
             } else {
-                this.asteroids.forEach((asteroid) => {
+                this.asteroidMap.forEach((asteroid) => {
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
                         projectile.destroy(this.projectileMap);
                         this.splitAsteroid(asteroid, elapsed);
@@ -262,9 +261,11 @@ export class Game {
         if (childMass < this.massDestroyed) {
             this.updateScore(childMass);
         } else {
-            const child = asteroid.createChild(this, childMass);
+            const id = `asteroid-${this.asteroidCount++}`;
+            const childOptions = asteroid.createChild(this, childMass);
+            const child = new Asteroid(id, childOptions);
+            this.asteroidMap.set(id, child);
             this.pushAsteroid(child, elapsed);
-            this.asteroids.push(child);
         }
     }
 
@@ -281,7 +282,7 @@ export class Game {
         this.mountAsteroidChild(asteroid, (1 - split) * asteroid.mass, elapsed);
 
         if (asteroid.destroyed === false) {
-            asteroid.destroy(this.asteroids);
+            asteroid.destroy(this.asteroidMap);
         }
     }
     updateScore(score) {
@@ -328,13 +329,13 @@ export class Game {
         this.ship.makeUntouchable(this.shieldTimeout);
         $svg.transformHealthBar(this.ship);
 
-        // this.projectiles = [];
         this.projectileMap = new Map();
-        this.asteroids = [];
+        this.asteroidMap = new Map();
         this.explosions = [];
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
-            this.asteroids.push(this.movingAsteroid(i));
+            let id = `asteroid-${this.asteroidCount++}`;
+            this.asteroidMap.set(id, this.movingAsteroid(id));
         }
     }
 
@@ -345,7 +346,8 @@ export class Game {
     levelUp() {
         this.playSoundtrackTempo = 1.2;
         for (let i = 0; i < this.asteroidStartCount + this.level; i++) {
-            this.asteroids.push(this.movingAsteroid(this.asteroidCount + 1));
+            let id = `asteroid-${this.asteroidCount++}`;
+            this.asteroidMap.set(id, this.movingAsteroid(id));
         }
         this.level += 1;
 
@@ -598,13 +600,10 @@ export class Asteroid extends Mass {
             guide: gameInstance.guide
         };
 
-        //TODO is it okay to create a new instance here?
-        const asteroid = new Asteroid(`asteroid-${gameInstance.asteroidCount}`, options);
-        gameInstance.asteroidCount++;
-        return asteroid;
+        return options;
     }
 
-    destroy(asteroidsArray, forceRemove = false) {
+    destroy(asteroidMap, forceRemove = false) {
         if (forceRemove) {
             console.warn('Asteroid got stuck');
             let stuckNode = document.querySelector(`[id*="${this.id}"]`);
@@ -616,8 +615,8 @@ export class Asteroid extends Mass {
         if (collisionLine != undefined) {
             collisionLine.remove();
         }
-        const asteroidIndex = asteroidsArray.findIndex((asteroid) => asteroid.id === this.id);
-        asteroidsArray.splice(asteroidIndex, 1);
+        // const asteroidIndex = asteroidsArray.findIndex((asteroid) => asteroid.id === this.id);
+        asteroidMap.delete(this.id);
     }
 }
 
