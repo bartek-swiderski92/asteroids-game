@@ -120,10 +120,11 @@ export class Game {
         asteroid.twist(Math.random() * 0.5 * Math.PI * asteroid.pushForce * 0.02, elapsed);
     }
 
-    movingAsteroid(id, elapsed) {
-        let asteroid = new Asteroid(id, {guide: this.guide});
+    createAsteroid(options = {}, elapsed) {
+        const id = `asteroid-${this.asteroidCount++}`;
+        const asteroid = new Asteroid(id, options);
+        this.asteroidMap.set(id, asteroid);
         this.pushAsteroid(asteroid, elapsed);
-        return asteroid;
     }
 
     updateFps(fps) {
@@ -261,11 +262,8 @@ export class Game {
         if (childMass < this.massDestroyed) {
             this.updateScore(childMass);
         } else {
-            const id = `asteroid-${this.asteroidCount++}`;
             const childOptions = asteroid.createChild(this, childMass);
-            const child = new Asteroid(id, childOptions);
-            this.asteroidMap.set(id, child);
-            this.pushAsteroid(child, elapsed);
+            this.createAsteroid(childOptions, elapsed);
         }
     }
 
@@ -334,8 +332,7 @@ export class Game {
         this.explosions = [];
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
-            let id = `asteroid-${this.asteroidCount++}`;
-            this.asteroidMap.set(id, this.movingAsteroid(id));
+            this.createAsteroid();
         }
     }
 
@@ -346,8 +343,7 @@ export class Game {
     levelUp() {
         this.playSoundtrackTempo = 1.2;
         for (let i = 0; i < this.asteroidStartCount + this.level; i++) {
-            let id = `asteroid-${this.asteroidCount++}`;
-            this.asteroidMap.set(id, this.movingAsteroid(id));
+            this.createAsteroid();
         }
         this.level += 1;
 
