@@ -24,11 +24,11 @@ $svg.drawCollisionLine = function (gameNode, lineElement, obj1, obj2, options = 
 };
 
 $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
+    const gridGTag = document.getElementById('grid');
     options = $helpers.assignDefaultValues('grid', options, gameNode, gameInstance);
     const {minor, major, lineColor, textColor} = options;
     const boardWidth = gameNode.clientWidth;
     const boardHeight = gameNode.clientHeight;
-    const gridGTag = $svgPrivate.setBasicAttributes('g', options);
 
     for (let x = 0; x < boardWidth; x += minor) {
         let lineEl;
@@ -54,7 +54,6 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
 
         gridGTag.innerHTML += lineEl;
     }
-    gameNode.appendChild(gridGTag);
 };
 $svgPrivate.drawHealthBar = function (options) {
     const groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
@@ -103,15 +102,21 @@ $svgPrivate.drawFps = function (options) {
 };
 
 $svg.drawUI = function (UIOptions, gameNode) {
+    const uiWrapper = document.getElementById('ui');
     const hpBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
     const level = $svgPrivate.drawLevel(UIOptions.level, gameNode);
     const score = $svgPrivate.drawScore(UIOptions.score);
     const fps = $svgPrivate.drawFps(UIOptions.fps);
 
-    gameNode.appendChild(hpBar);
-    gameNode.appendChild(level);
-    gameNode.appendChild(score);
-    gameNode.appendChild(fps);
+    // const uiWrapperOptions = $helpers.assignDefaultValues('ui');
+    // const uiWrapper = $svgPrivate.setBasicAttributes('g', uiWrapperOptions);
+
+    uiWrapper.appendChild(hpBar);
+    uiWrapper.appendChild(level);
+    uiWrapper.appendChild(score);
+    uiWrapper.appendChild(fps);
+    // console.log({gameNode});
+    // gameNode.appendChild(uiWrapper);
 };
 
 $svg.transformHealthBar = function (shipInstance) {
@@ -308,6 +313,7 @@ $svg.drawShip = function (gameNode, shipInstance) {
 
     $svgPrivate.drawShipPaths(shipGroupTag, guideGroupTag, shipInstance);
     shipGroupTag.appendChild(guideGroupTag);
+
     return shipGroupTag;
 };
 

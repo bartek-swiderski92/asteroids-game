@@ -115,7 +115,6 @@ $helpers.clearNode = function (node) {
 $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, globalOptions) {
     switch (gameElement) {
         case 'grid':
-            options.id = 'grid';
             options.minor = options.minor ?? 10;
             options.major = options.major ?? options.minor * 5;
             options.lineColor = options.lineColor ?? '#00FF00';

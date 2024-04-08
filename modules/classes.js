@@ -475,8 +475,10 @@ export class Ship extends Mass {
     }
 
     draw() {
-        gameNode.appendChild($svg.drawShip(gameNode, this));
-        this.massElement = gameNode.lastChild;
+        let shipGTag = document.getElementById('ship-g-tag');
+
+        shipGTag.appendChild($svg.drawShip(gameNode, this));
+        this.massElement = shipGTag.lastChild;
         this.shieldElement = document.getElementById(this.shipShieldOptions.id);
     }
 
