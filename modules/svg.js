@@ -108,15 +108,10 @@ $svg.drawUI = function (UIOptions, gameNode) {
     const score = $svgPrivate.drawScore(UIOptions.score);
     const fps = $svgPrivate.drawFps(UIOptions.fps);
 
-    // const uiWrapperOptions = $helpers.assignDefaultValues('ui');
-    // const uiWrapper = $svgPrivate.setBasicAttributes('g', uiWrapperOptions);
-
     uiWrapper.appendChild(hpBar);
     uiWrapper.appendChild(level);
     uiWrapper.appendChild(score);
     uiWrapper.appendChild(fps);
-    // console.log({gameNode});
-    // gameNode.appendChild(uiWrapper);
 };
 
 $svg.transformHealthBar = function (shipInstance) {

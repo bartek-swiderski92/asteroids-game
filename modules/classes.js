@@ -247,7 +247,6 @@ export class Game {
             const projectileId = `projectile-${this.projectileCount++}`;
             $helpers.playRandomSound(this.soundEffects, ['fire1', 'fire2']);
             this.projectileMap.set(projectileId, this.ship.projectile(projectileId, elapsed));
-            // this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
         }
     }
 
@@ -616,7 +615,6 @@ export class Asteroid extends Mass {
         if (collisionLine != undefined) {
             collisionLine.remove();
         }
-        // const asteroidIndex = asteroidsArray.findIndex((asteroid) => asteroid.id === this.id);
         asteroidMap.delete(this.id);
     }
 }
