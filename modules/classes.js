@@ -677,9 +677,11 @@ export class Explosion {
     }
 
     draw() {
+        const explosionGTag = document.getElementById('explosions-g-tag');
         const explosionNode = $svg.drawExplosion(this);
-        gameNode.appendChild(explosionNode);
-        this.node = gameNode.lastChild;
+
+        explosionGTag.appendChild(explosionNode);
+        this.node = explosionGTag.lastChild;
         [...this.node.children].forEach((child, index) => {
             let childObject = {
                 node: child,
