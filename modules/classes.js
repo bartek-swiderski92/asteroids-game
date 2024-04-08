@@ -23,7 +23,7 @@ export class Game {
         this.massDestroyed = 500;
         this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));
-        this.gridElement = document.getElementById('grid');
+        this.gridElement = document.getElementById('grid-g-tag');
         this.populateUiSettings();
         this.drawUI();
 
@@ -567,9 +567,11 @@ export class Asteroid extends Mass {
     }
 
     draw() {
+        const asteroidsGTag = document.getElementById('asteroids-g-tag');
+        console.log(asteroidsGTag);
         const asteroidNode = $svg.drawAsteroid(gameNode, this);
-        gameNode.appendChild(asteroidNode);
-        this.massElement = gameNode.lastChild;
+        asteroidsGTag.appendChild(asteroidNode);
+        this.massElement = asteroidsGTag.lastChild;
     }
 
     update(elapsed) {

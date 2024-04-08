@@ -24,7 +24,7 @@ $svg.drawCollisionLine = function (gameNode, lineElement, obj1, obj2, options = 
 };
 
 $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
-    const gridGTag = document.getElementById('grid');
+    const gridGTag = document.getElementById('grid-g-tag');
     options = $helpers.assignDefaultValues('grid', options, gameNode, gameInstance);
     const {minor, major, lineColor, textColor} = options;
     const boardWidth = gameNode.clientWidth;
@@ -102,7 +102,7 @@ $svgPrivate.drawFps = function (options) {
 };
 
 $svg.drawUI = function (UIOptions, gameNode) {
-    const uiWrapper = document.getElementById('ui');
+    const uiWrapper = document.getElementById('ui-g-tag');
     const hpBar = $svgPrivate.drawHealthBar(UIOptions.hpBar);
     const level = $svgPrivate.drawLevel(UIOptions.level, gameNode);
     const score = $svgPrivate.drawScore(UIOptions.score);
