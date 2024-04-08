@@ -198,19 +198,19 @@ export class Game {
                 this.soundEffects.thrust.stop();
             }
         }
-        this.projectiles.forEach((projectile) => {
+        this.projectileMap.forEach((projectile) => {
             if (projectile.destroyed) {
-                projectile.destroy(this.projectiles, true);
+                projectile.destroy(this.projectileMap, true);
             }
 
             projectile.update(elapsed);
 
             if (projectile.life <= 0 && projectile.destroyed === false) {
-                projectile.destroy(this.projectiles);
+                projectile.destroy(this.projectileMap);
             } else {
                 this.asteroids.forEach((asteroid) => {
                     if (this.areColliding(asteroid, projectile) && projectile.destroyed === false && asteroid.destroyed === false && asteroid.isUntouchable === false) {
-                        projectile.destroy(this.projectiles);
+                        projectile.destroy(this.projectileMap);
                         this.splitAsteroid(asteroid, elapsed);
                         if (this.playSoundtrackTempo > 0.2) {
                             this.playSoundtrackTempo = this.playSoundtrackTempo - Math.pow(this.asteroidStartCount + this.level, 2) / 2000;
@@ -243,11 +243,10 @@ export class Game {
         }
         this.ship.update(elapsed);
         if (this.ship.trigger && this.ship.loaded) {
-            this.projectileCount++;
-
+            let projectileId = `projectile-${this.projectileCount++}`;
             $helpers.playRandomSound(this.soundEffects, ['fire1', 'fire2']);
-
-            this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
+            this.projectileMap.set(projectileId, this.ship.projectile(projectileId, elapsed));
+            // this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
         }
     }
 
@@ -329,7 +328,8 @@ export class Game {
         this.ship.makeUntouchable(this.shieldTimeout);
         $svg.transformHealthBar(this.ship);
 
-        this.projectiles = [];
+        // this.projectiles = [];
+        this.projectileMap = new Map();
         this.asteroids = [];
         this.explosions = [];
 
@@ -506,8 +506,8 @@ export class Ship extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    projectile(projectileCount, elapsed) {
-        let projectile = new Projectile(`projectile-${projectileCount}`, this);
+    projectile(id, elapsed) {
+        let projectile = new Projectile(id, this);
         projectile.push(this.rotateValue, this.weaponPower, elapsed);
         projectile.draw();
         projectile.animateElement(true);
@@ -647,16 +647,15 @@ export class Projectile extends Mass {
         Mass.prototype.update.apply(this, arguments);
     }
 
-    destroy(projectilesArray, forceDestroy) {
+    destroy(projectileMap, forceDestroy) {
         if (forceDestroy) {
-            console.warn('Projectile got stuck');
+            console.warn('projectile got stuck');
             let stuckNode = document.querySelector(`#${this.id}`);
             stuckNode.remove();
         }
         this.destroyed = true;
         this.massElement.remove();
-        const projectileIndex = projectilesArray.findIndex((projectile) => projectile.id === this.id);
-        projectilesArray.splice(projectileIndex, 1);
+        projectileMap.delete(this.id);
     }
 }
 
