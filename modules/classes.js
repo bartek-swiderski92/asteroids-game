@@ -130,7 +130,7 @@ export class Game {
     updateFps(fps) {
         if (fps !== this.currentFps) {
             this.currentFps = fps;
-            this.fpsCounterElement.innerHTML = parseInt(fps);
+            this.fpsCounterElement.innerHTML = isFinite(fps) ? parseInt(fps) : 0;
         }
     }
 
