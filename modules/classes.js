@@ -215,21 +215,22 @@ export class Game {
                         if (this.playSoundtrackTempo > 0.2) {
                             this.playSoundtrackTempo = this.playSoundtrackTempo - Math.pow(this.asteroidStartCount + this.level, 2) / 2000;
                         }
-                        this.explosions.push(new Explosion(asteroid));
+                        const id = `${asteroid.id}-explosion`;
+                        this.explosionMap.set(id, new Explosion(id, asteroid));
                     }
                 }, this);
             }
         }, this);
 
-        this.explosions.forEach((explosion) => {
+        this.explosionMap.forEach((explosion) => {
             if (explosion.destroyed && !explosion.node.isConnected) {
-                explosion.destroy(this.explosions, true);
+                explosion.destroy(this.explosionMap, true);
             }
 
             explosion.update(elapsed);
 
             if (explosion.life <= 0 && explosion.destroyed === false) {
-                explosion.destroy(this.explosions);
+                explosion.destroy(this.explosionMap);
             }
         }, this);
 
@@ -243,7 +244,7 @@ export class Game {
         }
         this.ship.update(elapsed);
         if (this.ship.trigger && this.ship.loaded) {
-            let projectileId = `projectile-${this.projectileCount++}`;
+            const projectileId = `projectile-${this.projectileCount++}`;
             $helpers.playRandomSound(this.soundEffects, ['fire1', 'fire2']);
             this.projectileMap.set(projectileId, this.ship.projectile(projectileId, elapsed));
             // this.projectiles.push(this.ship.projectile(this.projectileCount, elapsed));
@@ -329,7 +330,7 @@ export class Game {
 
         this.projectileMap = new Map();
         this.asteroidMap = new Map();
-        this.explosions = [];
+        this.explosionMap = new Map();
 
         for (let i = 0; i < this.asteroidStartCount; i++) {
             this.createAsteroid();
@@ -655,9 +656,9 @@ export class Projectile extends Mass {
 }
 
 export class Explosion {
-    constructor(asteroidInstance = {}, options = {}) {
+    constructor(id, asteroidInstance, options = {}) {
         options = options = $helpers.assignDefaultValues('explosionClass', options, gameNode, asteroidInstance);
-        this.id = `${asteroidInstance.id}-explosion`;
+        this.id = id;
         this.class = options.class;
         this.originX = asteroidInstance.x;
         this.originY = asteroidInstance.y;
@@ -701,7 +702,7 @@ export class Explosion {
         this.explosionDistance += elapsed * 35;
     }
 
-    destroy(explosionArray, forceDestroy = false) {
+    destroy(explosionMap, forceDestroy = false) {
         if (forceDestroy) {
             console.warn('Explosion got stuck');
             let stuckNode = document.querySelector(`#${this.id}`);
@@ -709,7 +710,6 @@ export class Explosion {
         }
         this.node.remove();
         this.destroyed = true;
-        let index = explosionArray.findIndex((explosion) => explosion.id === this.id);
-        explosionArray.splice(index, 1);
+        explosionMap.delete(this.id);
     }
 }
