@@ -19,7 +19,7 @@ export class Game {
         this.drawGrid();
         this.projectileCount = 0;
         this.asteroidCount = 0;
-        this.asteroidStartCount = options.asteroidStartCount ?? 1;
+        this.asteroidStartCount = options.asteroidStartCount ?? 4;
         this.massDestroyed = 500;
         this.massDestroyed = 500;
         window.requestAnimationFrame(this.frame.bind(this));
@@ -151,15 +151,18 @@ export class Game {
         let x = $helpers.getRandomNumber(0, gameNode.clientWidth);
         let y = $helpers.getRandomNumber(0, gameNode.clientWidth);
 
-        if (x > this.ship.x - this.safeSpawnRadius && x < this.ship.x + this.safeSpawnRadius && y > this.ship.y - this.safeSpawnRadius && y < this.ship.y + this.safeSpawnRadius) {
-            console.log('blisko');
+        const distanceX = Math.abs(x - this.ship.x);
+        const distanceY = Math.abs(y - this.ship.y);
+        const hypotenuse = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        if (hypotenuse < this.safeSpawnRadius) {
             if (x < this.ship.x) {
                 x -= this.safeSpawnRadius;
-            } else if (x > this.ship.x) {
+            } else {
                 x += this.safeSpawnRadius;
-            } else if (y < this.ship.y) {
+            }
+            if (y < this.ship.y) {
                 y -= this.safeSpawnRadius;
-            } else if (y > this.ship.y) {
+            } else {
                 y += this.safeSpawnRadius;
             }
         }
@@ -374,7 +377,7 @@ export class Game {
         this.score = 0;
         this.updateScore(0);
 
-        this.safeSpawnRadius = 375 + 69; // hardcoded ship radius and asteroid (they don't exist yet)
+        this.safeSpawnRadius = 100 + 69; // hardcoded ship radius and asteroid (they don't exist yet)
 
         this.ship = new Ship(this.options);
         this.ship.makeUntouchable(this.shieldTimeout);

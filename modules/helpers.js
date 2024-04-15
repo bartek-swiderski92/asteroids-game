@@ -249,10 +249,10 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.mass = options.mass ?? 8;
             options.radius = options.radius ?? 15;
             options.angle = options.angle ?? (0.5 * Math.PI) / 2;
-            options.weaponPower = options.weaponPower ?? 2450;
-            options.weaponReloadTime = options.weaponReloadTime ?? 0.01;
+            options.weaponPower = options.weaponPower ?? 450;
+            options.weaponReloadTime = options.weaponReloadTime ?? 0.25;
             options.thrusterPower = options.thrusterPower ?? 1000;
-            options.maxHealth = options.maxHealth ?? 300000;
+            options.maxHealth = options.maxHealth ?? 300;
             options.maxHealthIncrease = options.maxHealthIncrease ?? options.maxHealth * 0.1;
             //Appearance
             options.shipFlameOptions = options.shipFlameOptions ?? {};
