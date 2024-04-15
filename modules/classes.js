@@ -33,7 +33,7 @@ export class Game {
         this.playSoundtrackTempo = 1.2;
         this.lastPlayedSound = undefined;
 
-        this.safeZonesVisible = true;
+        this.safeZonesVisible = false;
         this.resetGame();
 
         this.drawSafeZone();
