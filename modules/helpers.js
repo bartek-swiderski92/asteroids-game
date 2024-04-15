@@ -6,6 +6,19 @@ $helpers.getRandomNumber = function (min, max) {
     return Math.random() * (max - min + 1) + min;
 };
 
+$helpers.getRandomNumberWithExclusion = function (min, max, rangeMin, rangeMax) {
+    let randomNumber = $helpers.getRandomNumber(min, max);
+    if (randomNumber > rangeMin && randomNumber < rangeMax) {
+        let rangeSumHalf = rangeMax - rangeMin / 2; // 300
+        if (randomNumber + rangeSumHalf < rangeMin) {
+            randomNumber -= rangeSumHalf;
+        } else {
+            randomNumber += rangeSumHalf;
+        }
+    }
+    return randomNumber;
+};
+
 $helpers.playRandomSound = function (soundObject, soundArray) {
     let sound = soundArray[Math.floor($helpers.getRandomNumber(0, soundArray.length - 1))];
     soundObject[sound].currentTime = 0;
