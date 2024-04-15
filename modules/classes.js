@@ -120,6 +120,7 @@ export class Game {
 
     switchSafeZone() {
         this.safeZonesVisible = !this.safeZonesVisible;
+        if (this.isGamePaused) this.transformSafeZone();
         this.safeZoneNode.setAttribute('display', this.safeZonesVisible ? 'inline' : 'none');
     }
 
@@ -147,6 +148,7 @@ export class Game {
     }
 
     assignAsteroidsCoordinates(asteroidOptions) {
+        //TODO prevent asteroids spawning on the edge of the screen
         if (asteroidOptions.x != undefined && asteroidOptions.y != undefined) return asteroidOptions;
         let x = $helpers.getRandomNumber(0, gameNode.clientWidth);
         let y = $helpers.getRandomNumber(0, gameNode.clientWidth);
