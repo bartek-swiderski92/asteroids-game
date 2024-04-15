@@ -55,6 +55,21 @@ $svg.drawGrid = function (gameNode, gameInstance, options = {}) {
         gridGTag.innerHTML += lineEl;
     }
 };
+
+$svg.drawSafeZone = function (gameInstance) {
+    const options = {
+        cx: 0,
+        cy: 0,
+        r: gameInstance.safeSpawnRadius,
+        // stroke: 'rgba(255, 119, 0, 0.5)',
+        // fill: 'rgba(255, 119, 0, 0.65)'
+        fill: 'rgba(146, 26, 173, 0.65)',
+        display: gameInstance.safeZonesVisible ? 'inline' : 'none'
+    };
+
+    return $svgPrivate.drawCircle(options);
+};
+
 $svgPrivate.drawHealthBar = function (options) {
     const groupHpTag = $svgPrivate.setBasicAttributes('g', options.groupHpTag);
     const hpText = $svgPrivate.setBasicAttributes('text', options.hpText);

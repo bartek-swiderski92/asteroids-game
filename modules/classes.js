@@ -33,7 +33,10 @@ export class Game {
         this.playSoundtrackTempo = 1.2;
         this.lastPlayedSound = undefined;
 
+        this.safeZonesVisible = true;
         this.resetGame();
+
+        this.drawSafeZone();
         this.gameOverSettings = options.gameOverSettings ?? {};
         this.currentFps = 0;
         this.fpsCounterElement = document.getElementById('current-fps');
@@ -44,6 +47,14 @@ export class Game {
 
     drawGrid() {
         $svg.drawGrid(gameNode, this);
+    }
+
+    drawSafeZone() {
+        let safeZone = $svg.drawSafeZone(this);
+        let safeZoneTag = document.getElementById('safe-zone-g-tag');
+
+        this.safeZoneNode = safeZone;
+        safeZoneTag.appendChild(safeZone);
     }
 
     populateUiSettings() {
@@ -107,6 +118,11 @@ export class Game {
         collisionLines.forEach((line) => line.remove());
     }
 
+    switchSafeZone() {
+        this.safeZonesVisible = !this.safeZonesVisible;
+        this.safeZoneNode.setAttribute('display', this.safeZonesVisible ? 'inline' : 'none');
+    }
+
     drawCollisionLine(obj1, obj2) {
         const lineId = `${obj1.id}-${obj2.id}`;
         const lineElement = document.getElementById(lineId);
@@ -121,12 +137,36 @@ export class Game {
     }
 
     createAsteroid(options = {}, elapsed) {
-        options.x = options.x ?? $helpers.getRandomNumberWithExclusion(0, gameNode.clientWidth, this.asteroidRespawnZone.xMax, this.asteroidRespawnZone.xMin); //TODO: replace the 100 with ship radius once global settings is developed
-        options.y = options.y ?? $helpers.getRandomNumberWithExclusion(0, gameNode.clientWidth, this.asteroidRespawnZone.yMin, this.asteroidRespawnZone.yMax);
+        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
+        options = this.assignAsteroidsCoordinates(options);
+
         const id = `asteroid-${this.asteroidCount++}`;
         const asteroid = new Asteroid(id, options);
         this.asteroidMap.set(id, asteroid);
         this.pushAsteroid(asteroid, elapsed);
+    }
+
+    assignAsteroidsCoordinates(asteroidOptions) {
+        if (asteroidOptions.x != undefined && asteroidOptions.y != undefined) return asteroidOptions;
+        let x = $helpers.getRandomNumber(0, gameNode.clientWidth);
+        let y = $helpers.getRandomNumber(0, gameNode.clientWidth);
+
+        if (x > this.ship.x - this.safeSpawnRadius && x < this.ship.x + this.safeSpawnRadius && y > this.ship.y - this.safeSpawnRadius && y < this.ship.y + this.safeSpawnRadius) {
+            console.log('blisko');
+            if (x < this.ship.x) {
+                x -= this.safeSpawnRadius;
+            } else if (x > this.ship.x) {
+                x += this.safeSpawnRadius;
+            } else if (y < this.ship.y) {
+                y -= this.safeSpawnRadius;
+            } else if (y > this.ship.y) {
+                y += this.safeSpawnRadius;
+            }
+        }
+
+        asteroidOptions.x = x;
+        asteroidOptions.y = y;
+        return asteroidOptions;
     }
 
     updateFps(fps) {
@@ -165,7 +205,9 @@ export class Game {
         }
         this.ship.isCompromised = false;
 
-        this.updateAsteroidRespawnZone();
+        if (this.safeZonesVisible) {
+            this.transformSafeZone();
+        }
 
         if (this.asteroidMap.size === 0) {
             this.levelUp();
@@ -254,11 +296,8 @@ export class Game {
         }
     }
 
-    updateAsteroidRespawnZone() {
-        this.asteroidRespawnZone.xMin = this.ship.x - this.ship.radius * 5;
-        this.asteroidRespawnZone.xMax = this.ship.x + this.ship.radius * 5;
-        this.asteroidRespawnZone.yMin = this.ship.y - this.ship.radius * 5;
-        this.asteroidRespawnZone.yMax = this.ship.y + this.ship.radius * 5;
+    transformSafeZone() {
+        this.safeZoneNode.setAttribute('transform', `translate(${this.ship.x}, ${this.ship.y})`);
     }
 
     areColliding(obj1, obj2) {
@@ -335,12 +374,7 @@ export class Game {
         this.score = 0;
         this.updateScore(0);
 
-        this.asteroidRespawnZone = {
-            xMin: gameNode.clientWidth / 2 - 75,
-            xMax: gameNode.clientWidth / 2 + 75,
-            yMin: gameNode.clientWidth / 2 - 75,
-            yMax: gameNode.clientWidth / 2 + 75
-        };
+        this.safeSpawnRadius = 375 + 69; // hardcoded ship radius and asteroid (they don't exist yet)
 
         this.ship = new Ship(this.options);
         this.ship.makeUntouchable(this.shieldTimeout);
@@ -560,9 +594,8 @@ export class Ship extends Mass {
 }
 
 export class Asteroid extends Mass {
-    constructor(id, options = {}) {
+    constructor(id, options) {
         options.id = id;
-        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
         super(options);
         this.id = id;
         this.groupId = options.groupId;
