@@ -20,7 +20,11 @@
             class="pause-text hide"
         >
             <div class="pause__text">Paused</div>
-            <div class="pause__press-esc">Press the Escape button to continue</div>
+            <div class="pause__controls">
+                <div id="pause__press-esc">Press the Escape button to continue</div>
+                <div id="pause__press-R">Press R to display spawn zone</div>
+                <div id="pause__press-G">Press G to display grid</div>
+            </div>
         </div>
         <div id="text-overlay"></div>
         <svg
@@ -29,6 +33,7 @@
             xmlns="http://www.w3.org/2000/svg"
         >
             <g id="grid-g-tag"></g>
+            <g id="safe-zone-g-tag"></g>
             <g id="asteroids-g-tag"></g>
             <g id="explosions-g-tag"></g>
             <g id="ship-g-tag"></g>

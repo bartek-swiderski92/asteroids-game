@@ -36,9 +36,18 @@ body {
 
 #game-paused .pause__text {
     font-size: 4rem;
-    margin-bottom: 150px;
+    margin-bottom: 50px;
 }
-#game-paused .pause__press-esc {
+
+#game-paused .pause__controls #pause__press-esc {
+    font-size: 2rem;
+    margin-bottom: 50px;
+}
+#game-paused .pause__controls #pause__press-R {
+    font-size: 2rem;
+    margin-bottom: 50px;
+}
+#game-paused .pause__controls #pause__press-G {
     font-size: 2rem;
 }
 

@@ -6,6 +6,19 @@ $helpers.getRandomNumber = function (min, max) {
     return Math.random() * (max - min + 1) + min;
 };
 
+$helpers.getRandomNumberWithExclusion = function (min, max, rangeMin, rangeMax) {
+    let randomNumber = $helpers.getRandomNumber(min, max);
+    if (randomNumber > rangeMin && randomNumber < rangeMax) {
+        let rangeSumHalf = rangeMax - rangeMin / 2; // 300
+        if (randomNumber + rangeSumHalf < rangeMin) {
+            randomNumber -= rangeSumHalf;
+        } else {
+            randomNumber += rangeSumHalf;
+        }
+    }
+    return randomNumber;
+};
+
 $helpers.playRandomSound = function (soundObject, soundArray) {
     let sound = soundArray[Math.floor($helpers.getRandomNumber(0, soundArray.length - 1))];
     soundObject[sound].currentTime = 0;
@@ -14,8 +27,8 @@ $helpers.playRandomSound = function (soundObject, soundArray) {
 
 $helpers.handleKeyPress = function (event, value, game) {
     let keyPressed = event.key || event.keyCode;
+    if (event.ctrlKey || event.shiftKey || event.altKey) return;
     if (game.gameOver === false) {
-        // console.log(event.key, event.keyCode);
         switch (keyPressed) {
             case 'ArrowUp':
             case 38:
@@ -49,6 +62,15 @@ $helpers.handleKeyPress = function (event, value, game) {
                 if (game.buttonPressed == null) {
                     game.buttonPressed = keyPressed;
                     game.switchGuide();
+                } else if (!value) {
+                    game.buttonPressed = null;
+                }
+                break;
+            case 'r':
+            case '82':
+                if (game.buttonPressed == null) {
+                    game.buttonPressed = keyPressed;
+                    game.switchSafeZone();
                 } else if (!value) {
                     game.buttonPressed = null;
                 }
@@ -293,8 +315,8 @@ $helpers.assignDefaultValues = function (gameElement, options = {}, gameNode, gl
             options.groupId = `group-tag-${options.id}`;
             options.initialX = options.initialX ?? 0;
             options.initialY = options.initialY ?? 0;
-            options.x = options.x ?? Math.random() * gameNode.clientWidth;
-            options.y = options.y ?? Math.random() * gameNode.clientHeight;
+            // options.x = options.x ?? Math.random() * gameNode.clientWidth;
+            // options.y = options.y ?? Math.random() * gameNode.clientHeight;
             options.density = options.density ?? 1;
             options.mass = options.mass ?? 15000;
             options.pushForce = options.pushForce ?? 12000000;

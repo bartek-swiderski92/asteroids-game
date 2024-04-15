@@ -33,7 +33,10 @@ export class Game {
         this.playSoundtrackTempo = 1.2;
         this.lastPlayedSound = undefined;
 
+        this.safeZonesVisible = false;
         this.resetGame();
+
+        this.drawSafeZone();
         this.gameOverSettings = options.gameOverSettings ?? {};
         this.currentFps = 0;
         this.fpsCounterElement = document.getElementById('current-fps');
@@ -44,6 +47,14 @@ export class Game {
 
     drawGrid() {
         $svg.drawGrid(gameNode, this);
+    }
+
+    drawSafeZone() {
+        let safeZone = $svg.drawSafeZone(this);
+        let safeZoneTag = document.getElementById('safe-zone-g-tag');
+
+        this.safeZoneNode = safeZone;
+        safeZoneTag.appendChild(safeZone);
     }
 
     populateUiSettings() {
@@ -107,6 +118,11 @@ export class Game {
         collisionLines.forEach((line) => line.remove());
     }
 
+    switchSafeZone() {
+        this.safeZonesVisible = !this.safeZonesVisible;
+        this.safeZoneNode.setAttribute('display', this.safeZonesVisible ? 'inline' : 'none');
+    }
+
     drawCollisionLine(obj1, obj2) {
         const lineId = `${obj1.id}-${obj2.id}`;
         const lineElement = document.getElementById(lineId);
@@ -121,10 +137,39 @@ export class Game {
     }
 
     createAsteroid(options = {}, elapsed) {
+        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
+        options = this.assignAsteroidsCoordinates(options);
+
         const id = `asteroid-${this.asteroidCount++}`;
         const asteroid = new Asteroid(id, options);
         this.asteroidMap.set(id, asteroid);
         this.pushAsteroid(asteroid, elapsed);
+    }
+
+    assignAsteroidsCoordinates(asteroidOptions) {
+        if (asteroidOptions.x != undefined && asteroidOptions.y != undefined) return asteroidOptions;
+        let x = $helpers.getRandomNumber(0, gameNode.clientWidth);
+        let y = $helpers.getRandomNumber(0, gameNode.clientWidth);
+
+        const distanceX = Math.abs(x - this.ship.x);
+        const distanceY = Math.abs(y - this.ship.y);
+        const hypotenuse = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        if (hypotenuse < this.safeSpawnRadius) {
+            if (x < this.ship.x) {
+                x -= this.safeSpawnRadius;
+            } else {
+                x += this.safeSpawnRadius;
+            }
+            if (y < this.ship.y) {
+                y -= this.safeSpawnRadius;
+            } else {
+                y += this.safeSpawnRadius;
+            }
+        }
+
+        asteroidOptions.x = x;
+        asteroidOptions.y = y;
+        return asteroidOptions;
     }
 
     updateFps(fps) {
@@ -162,6 +207,10 @@ export class Game {
             return;
         }
         this.ship.isCompromised = false;
+
+        if (this.safeZonesVisible) {
+            this.transformSafeZone();
+        }
 
         if (this.asteroidMap.size === 0) {
             this.levelUp();
@@ -250,6 +299,10 @@ export class Game {
         }
     }
 
+    transformSafeZone() {
+        this.safeZoneNode.setAttribute('transform', `translate(${this.ship.x}, ${this.ship.y})`);
+    }
+
     areColliding(obj1, obj2) {
         return this.distanceBetween(obj1, obj2) < obj1.radius + obj2.radius;
     }
@@ -323,6 +376,9 @@ export class Game {
         this.gridElement.setAttribute('display', 'none');
         this.score = 0;
         this.updateScore(0);
+
+        this.safeSpawnRadius = 100 + 69; // hardcoded ship radius and asteroid (they don't exist yet)
+
         this.ship = new Ship(this.options);
         this.ship.makeUntouchable(this.shieldTimeout);
         $svg.transformHealthBar(this.ship);
@@ -541,9 +597,8 @@ export class Ship extends Mass {
 }
 
 export class Asteroid extends Mass {
-    constructor(id, options = {}) {
+    constructor(id, options) {
         options.id = id;
-        options = $helpers.assignDefaultValues('asteroidClass', options, gameNode);
         super(options);
         this.id = id;
         this.groupId = options.groupId;
@@ -567,7 +622,6 @@ export class Asteroid extends Mass {
 
     draw() {
         const asteroidsGTag = document.getElementById('asteroids-g-tag');
-        console.log(asteroidsGTag);
         const asteroidNode = $svg.drawAsteroid(gameNode, this);
         asteroidsGTag.appendChild(asteroidNode);
         this.massElement = asteroidsGTag.lastChild;
