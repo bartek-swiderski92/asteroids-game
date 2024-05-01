@@ -2,7 +2,7 @@
 My version of the classic [1979 Asteroids game](https://en.wikipedia.org/wiki/Asteroids_(video_game)) 
 
 ## Playable Game
-https://github.com/bartek-swiderski92/asteroids-game
+https://bartek-swiderski92.github.io/asteroids-game/
 
 ## Controls
 `↑` Main thruster \
